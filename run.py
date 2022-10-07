@@ -19,23 +19,44 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 
 from datetime import datetime
 
-def getEventType():
+def get_event_type():
     """
-    Request type of event from user (Open Day or Musician)"""
+    Request type of event from user (Open Day or Musician)
+    """
     print("Welcome to the Open Day Planner. I hope it helps to make the event run seamlessly!\n")
-    event_type=input("What type of event is it? Please write Open Day or Musician: ")
-    print(f"The event type you provided is {event_type}")
-    print("\n")
-    if event_type == "Open Day":
-        print("You selected Open Day, a valid response")
-    elif event_type == "Musician":
-        print("You selected Musician, a valid response")
-    else:
-        print("That is not a valid response. Please select Open Day or Musician, ensuring you use initial caps")
+    while True:
+        event_type=input("What type of event are you planning? Please write Open Day or Musician: ")
+        if validate_event_type(event_type):
+            print("You input a valid event type")
+            break
+    # print(f"The event type you provided is {event_type}")
+    # print("\n")
+    # if event_type == "Open Day":
+    #     print("You selected Open Day, a valid response")
+    # elif event_type == "Musician":
+    #     print("You selected Musician, a valid response")
+    # else:
+    #     print("That is not a valid response. Please select Open Day or Musician, ensuring you use initial caps")
+
+def validate_event_type(values):
+    """ 
+    Check user input Open Day or Musician
+    """
+    try:
+        if values != "Open Day" and values != "Musician":
+            raise ValueError (
+                "Please input 'Open Day' or 'Musician', ensuring you use initial caps."
+            )
+    except ValueError as e:
+        print(f"'{values}' is not a valid response. {e}\n")
+        return False
+    return True
 
 
-
-def getEventDate():
+def get_event_date():
+    """
+    Get input from user about date of event
+    """
     print("Please provide the date of the event")
     print("Use the format mm/dd/yyyy \n")
     eventDate = input("Event date: \n")
@@ -58,5 +79,5 @@ def getEventDate():
     else:
         print("Please try again and type either 'Y' or 'N'")
 
-# getEventType()
-getEventDate()
+get_event_type()
+# get_event_date()
