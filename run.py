@@ -58,9 +58,12 @@ def get_event_date():
     Get input from user about date of event
     """
     print("Please provide the date of the event")
-    print("Use the format mm/dd/yyyy \n")
-    eventDate = input("Event date: \n")
-    validate_event_date(eventDate)
+    print("Use the format dd/mm/yyyy \n")
+    while True:
+        eventDate = input("Event date: \n")
+        if validate_event_date(eventDate):
+            print("date has been validated")
+            break
     
 
 def validate_event_date(date_values):
@@ -70,11 +73,20 @@ def validate_event_date(date_values):
     # https://theprogrammingexpert.com/check-if-string-is-date-in-python/#:~:text=To%20check%20if%20a%20string,string%20and%20a%20date%20format.&text=When%20working%20with%20strings%20in,date%20can%20be%20very%20useful.
 
     format_ddmmyyyy = "%d/%m/%Y"
+    # try:
+    #     date != datetime.strptime(date_values, format_ddmmyyyy):
+    #         raise ValueError (
+    #             "Please ensure you use the format dd/mm/yyyy."
+    #         )
+    # except ValueError as e:
+    #     print(f"'{date_values}' is not a valid response. {e}\n")
+    #     return False
+    # return True
+    
     try:
         date = datetime.strptime(date_values, format_ddmmyyyy)
-        print("The string is a date with format " + format_ddmmyyyy)
     except ValueError:
-        print("The string is not a date with format " + format_ddmmyyyy)
+        print("Please ensure you use the format dd/mm/yyyy.")
         return False
     return True
 
@@ -88,5 +100,5 @@ def validate_event_date(date_values):
     else:
         print("Please try again and type either 'Y' or 'N'")
 
-get_event_type()
-# get_event_date()
+# get_event_type()
+get_event_date()
