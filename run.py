@@ -1,8 +1,4 @@
-# Your code goes here.
-# You can delete these comments, but do not change the name of this file
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
-
-
 
 import gspread
 from google.oauth2.service_account import Credentials
@@ -27,16 +23,7 @@ def get_event_type():
     while True:
         event_type=input("What type of event are you planning? Please write Open Day or Musician: ")
         if validate_event_type(event_type):
-            print("You input a valid event type")
             break
-    # print(f"The event type you provided is {event_type}")
-    # print("\n")
-    # if event_type == "Open Day":
-    #     print("You selected Open Day, a valid response")
-    # elif event_type == "Musician":
-    #     print("You selected Musician, a valid response")
-    # else:
-    #     print("That is not a valid response. Please select Open Day or Musician, ensuring you use initial caps")
 
 def validate_event_type(values):
     """ 
@@ -57,14 +44,26 @@ def get_event_date():
     """
     Get input from user about date of event
     """
-    print("Please provide the date of the event")
-    print("Use the format dd/mm/yyyy \n")
+    print("\n")
+    print("Please provide the date of the event (use the format dd/mm/yyyy) \n")
     while True:
         eventDate = input("Event date: \n")
         if validate_event_date(eventDate):
-            print("date has been validated")
             break
-    
+    print(f"You provided this date {eventDate}")    
+
+def confirm_date():
+    while True:
+        checkDate = input("Is this correct (Y/N)? \n")
+        if check_date_validation(checkDate):
+            break
+    if checkDate == "N":
+        get_event_date()
+        confirm_date()
+
+date_today = datetime.today().date()
+print(date_today)
+
 
 def validate_event_date(date_values):
     """ 
@@ -73,32 +72,25 @@ def validate_event_date(date_values):
     # https://theprogrammingexpert.com/check-if-string-is-date-in-python/#:~:text=To%20check%20if%20a%20string,string%20and%20a%20date%20format.&text=When%20working%20with%20strings%20in,date%20can%20be%20very%20useful.
 
     format_ddmmyyyy = "%d/%m/%Y"
-    # try:
-    #     date != datetime.strptime(date_values, format_ddmmyyyy):
-    #         raise ValueError (
-    #             "Please ensure you use the format dd/mm/yyyy."
-    #         )
-    # except ValueError as e:
-    #     print(f"'{date_values}' is not a valid response. {e}\n")
-    #     return False
-    # return True
-    
     try:
         date = datetime.strptime(date_values, format_ddmmyyyy)
     except ValueError:
         print("Please ensure you use the format dd/mm/yyyy.")
         return False
     return True
-
     
-    print(f"You provided this date {eventDate}")
-    checkDate = input("Is this correct (Y/N)")
-    if checkDate == "Y":
-        print("They typed the right date!)")
-    elif checkDate == "N":
-        print("Better try again")
-    else:
-        print("Please try again and type either 'Y' or 'N'")
+def check_date_validation(check_value):
+    try:
+        if check_value != "Y" and check_value != "N":
+            raise ValueError (
+                "Please input 'Y' for yes or 'N' for no, ensuring you use a capital letter."
+            )
+    except ValueError as e:
+        print(f"'{check_value}' is not a valid response. {e}\n")
+        return False
+    return True
+
 
 # get_event_type()
-get_event_date()
+# get_event_date()
+# confirm_date()
