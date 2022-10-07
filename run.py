@@ -13,13 +13,17 @@ CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 
+import datetime
 from datetime import datetime
+from datetime import date 
+
+
+print("Welcome to the Open Day Planner. I hope it helps to make the event run seamlessly!\n")
 
 def get_event_type():
     """
     Request type of event from user (Open Day or Musician)
     """
-    print("Welcome to the Open Day Planner. I hope it helps to make the event run seamlessly!\n")
     while True:
         event_type=input("What type of event are you planning? Please write Open Day or Musician: ")
         if validate_event_type(event_type):
@@ -49,8 +53,10 @@ def get_event_date():
     while True:
         eventDate = input("Event date: \n")
         if validate_event_date(eventDate):
+            return eventDate
             break
-    print(f"You provided this date {eventDate}")    
+    print(f"You provided this date {eventDate}")
+   
 
 def confirm_date():
     while True:
@@ -61,8 +67,8 @@ def confirm_date():
         get_event_date()
         confirm_date()
 
-date_today = datetime.today().date()
-print(date_today)
+
+
 
 
 def validate_event_date(date_values):
@@ -90,7 +96,24 @@ def check_date_validation(check_value):
         return False
     return True
 
+date_today = date.today()
+print(date_today)
 
-# get_event_type()
-# get_event_date()
-# confirm_date()
+get_event_type()
+date_of_event = get_event_date()
+format_ddmmyyyy = "%d/%m/%Y"
+formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
+# https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
+formatted_date_no_time = datetime.date(formatted_date)
+
+confirm_date()
+print(f"formatted date: {formatted_date}")
+# https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
+print(f"formatted date without time: {formatted_date_no_time}")
+# print(type(formatted_date))
+# print(type(formatted_date_no_time))
+# print(type(date_today))
+if formatted_date_no_time > datetime.today().date():
+    print("greater than")
+elif formatted_date_no_time < datetime.today().date():
+    print("less than")
