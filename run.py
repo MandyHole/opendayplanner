@@ -108,8 +108,7 @@ def check_date_validation(check_value):
         return False
     return True
 
-# validated_event_type = get_event_type()
-# confirm_date()
+
 
 
     # datestouse
@@ -136,6 +135,7 @@ def create_spreadsheet():
 
 # create_spreadsheet()
 
+# https://www.tutorialspoint.com/python-program-to-validate-email-address
 def get_email():
     while True:
         entered_email = input("What is your email address?  ")
@@ -153,4 +153,9 @@ def validate_email(s):
         return False
 
 
-get_email()
+def main():
+    validated_event_type = get_event_type()
+    confirm_date()
+    get_email()
+
+# main()
