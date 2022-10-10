@@ -3,8 +3,10 @@
 import gspread
 from google.oauth2.service_account import Credentials
 import datetime
-# from datetime import datetime
-# from datetime import date 
+from datetime import datetime
+from datetime import date 
+import re
+
 
 
 SCOPE = [
@@ -57,16 +59,16 @@ def get_event_date():
         if validate_event_date(event_date):
             return event_date
             break
-    print(f"You provided this date {event_date}")
+    
    
 
 def confirm_date():
+    final_date_to_check = get_date_to_check()    
     while True:
         checkDate = input("Is this correct (Y/N)? \n")
         if check_date_validation(checkDate):
             break
     if checkDate == "N":
-        get_event_date()
         confirm_date()
 
 
@@ -83,6 +85,17 @@ def validate_event_date(date_values):
         print("Please ensure you use the format dd/mm/yyyy.")
         return False
     return True
+
+def get_date_to_check():
+    date_of_event = get_event_date()
+    format_ddmmyyyy = "%d/%m/%Y"
+    formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
+    # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
+    formatted_date_no_time = datetime.date(formatted_date)
+    # https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday
+    date_to_check = formatted_date_no_time.strftime("%A, %d. %B %Y")
+    print(f"You provided this date: {date_to_check}")
+    return date_to_check
     
 def check_date_validation(check_value):
     try:
@@ -95,17 +108,20 @@ def check_date_validation(check_value):
         return False
     return True
 
-date_today = date.today()
-print(date_today)
-
-validated_event_type = get_event_type()
-date_of_event = get_event_date()
-format_ddmmyyyy = "%d/%m/%Y"
-formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
-# https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
-formatted_date_no_time = datetime.date(formatted_date)
-
+# validated_event_type = get_event_type()
 # confirm_date()
+
+
+    # datestouse
+    # date_today = date.today()
+    # format_ddmmyyyy = "%d/%m/%Y"
+    # formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
+    # # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
+    # formatted_date_no_time = datetime.date(formatted_date)
+    # # https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday
+    # date_to_check = formatted_date_no_time.strftime("%A, %d. %B %Y")
+
+
 # https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
 def check_date_future():
     if formatted_date_no_time > datetime.today().date():
@@ -117,6 +133,24 @@ def create_spreadsheet():
     spreadsheet = GSPREAD_CLIENT.create(f'{validated_event_type}: {date_of_event}')
     spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
 
-    print('spreadsheet function ran')
 
-create_spreadsheet()
+# create_spreadsheet()
+
+def get_email():
+    while True:
+        entered_email = input("What is your email address?  ")
+        print("\n")
+        if validate_email(entered_email):
+            break
+    print("Thank you for providing a valid email address so we can share the spreadsheet with you.\n")
+
+def validate_email(s):
+    pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+    if re.match(pat,s):
+        return True
+    else:
+        print("That is not a valid email address; please try again.\n")
+        return False
+
+
+get_email()
