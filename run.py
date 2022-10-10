@@ -2,6 +2,10 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
+import datetime
+# from datetime import datetime
+# from datetime import date 
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -13,9 +17,6 @@ CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 
-import datetime
-from datetime import datetime
-from datetime import date 
 
 
 print("Welcome to the Open Day Planner. I hope it helps to make the event run seamlessly!\n")
@@ -28,6 +29,7 @@ def get_event_type():
         event_type=input("What type of event are you planning? Please write Open Day or Musician: ")
         if validate_event_type(event_type):
             break
+    return event_type
 
 def validate_event_type(values):
     """ 
@@ -51,11 +53,11 @@ def get_event_date():
     print("\n")
     print("Please provide the date of the event (use the format dd/mm/yyyy) \n")
     while True:
-        eventDate = input("Event date: \n")
-        if validate_event_date(eventDate):
-            return eventDate
+        event_date = input("Event date: \n")
+        if validate_event_date(event_date):
+            return event_date
             break
-    print(f"You provided this date {eventDate}")
+    print(f"You provided this date {event_date}")
    
 
 def confirm_date():
@@ -66,9 +68,6 @@ def confirm_date():
     if checkDate == "N":
         get_event_date()
         confirm_date()
-
-
-
 
 
 def validate_event_date(date_values):
@@ -99,21 +98,25 @@ def check_date_validation(check_value):
 date_today = date.today()
 print(date_today)
 
-get_event_type()
+validated_event_type = get_event_type()
 date_of_event = get_event_date()
 format_ddmmyyyy = "%d/%m/%Y"
 formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
 # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
 formatted_date_no_time = datetime.date(formatted_date)
 
-confirm_date()
-print(f"formatted date: {formatted_date}")
+# confirm_date()
 # https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
-print(f"formatted date without time: {formatted_date_no_time}")
-# print(type(formatted_date))
-# print(type(formatted_date_no_time))
-# print(type(date_today))
-if formatted_date_no_time > datetime.today().date():
-    print("greater than")
-elif formatted_date_no_time < datetime.today().date():
-    print("less than")
+def check_date_future():
+    if formatted_date_no_time > datetime.today().date():
+        print("greater than")
+    elif formatted_date_no_time < datetime.today().date():
+        print("less than")
+
+def create_spreadsheet():
+    spreadsheet = GSPREAD_CLIENT.create(f'{validated_event_type}: {date_of_event}')
+    spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
+
+    print('spreadsheet function ran')
+
+create_spreadsheet()
