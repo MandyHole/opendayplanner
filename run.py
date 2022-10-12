@@ -159,10 +159,23 @@ def create_spreadsheet():
     # spreadsheet = GSPREAD_CLIENT.create('test-spreadsheet')
     # spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
 
-def create_worksheet(sheet_name, neededrows, neededcols):
+def create_worksheet(sheet_name, sheet_data, final_column):
     test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
-    new_spreadsheet=test_spreadsheet.add_worksheet(title=sheet_name, rows=neededrows, cols=neededcols)
-    return new_spreadsheet
+    new_worksheet=test_spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20)
+    # https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
+    new_worksheet.clear()
+    set_with_dataframe(worksheet=new_worksheet, dataframe=sheet_data, include_index=False,
+    include_column_header=True, resize=True)
+    # https://github.com/robin900/gspread-formatting
+    set_column_width(new_worksheet, 'A:D', 250)
+    fmt = cellFormat(
+        backgroundColor=color(.9, .9, .9),
+        textFormat=textFormat(bold=True, foregroundColor=color(0, 0, 0)),
+        horizontalAlignment='CENTER'
+        )
+    format_cell_range(new_worksheet, f'A1:{final_column}1', fmt)
+
+    return new_worksheet
     
     # spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20) change above to this once done testing to create new spreadsheet)
     # sheet_name.update([sheet_values.columns.values.tolist()] + sheet_values.values.tolist())
@@ -179,17 +192,16 @@ stock_data = pd.DataFrame({
     'Location of Stock': ['', '', '', '', '', ''],
     'Date checked': ['', '', '', '', '', '']})
 
+create_worksheet('Stock Take', stock_data, 'D')
 
-
-attendees_data = {
+attendees_data = pd.DataFrame({
     "Name of Child": [''],
     "Child's Year Group": [''],
     "Child's Interests": [''],
     "Dietary Requirements": [''],
-}
-attendees_dataframe = pd.DataFrame(attendees_data)
+})
 
-tasks_data = {
+tasks_data = pd.DataFrame({
     "Task": [
             'Added to Website',
             'Option on Booking Form', 
@@ -208,10 +220,7 @@ tasks_data = {
     "Date completed": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
     "Person performing task": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
     "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
-}
-
-tasks_dataframe = pd.DataFrame(tasks_data)
-
+})
 
 
 # create_spreadsheet()
@@ -223,26 +232,10 @@ tasks_dataframe = pd.DataFrame(tasks_data)
 # https://www.tutorialspoint.com/python-program-to-validate-email-address
 
 
-def main():
-    get_event_type()
-    confirm_date()
-    get_email()
+# def main():
+#     get_event_type()
+#     confirm_date()
+#     get_email()
     # create_spreadsheet()
-    tasks_worksheet = create_worksheet('Stock', 7, 4)
-    set_with_dataframe(tasks_worksheet, stock_data)
-
-# main()
-# https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
-tasks_worksheet = create_worksheet('Stock', 7, 4)
-tasks_worksheet.clear()
-set_with_dataframe(worksheet=tasks_worksheet, dataframe=stock_data, include_index=False,
-include_column_header=True, resize=True)
-tasks_worksheet.format('A1:D1', {'textFormat': {'bold': True}})
-set_column_width(tasks_worksheet, 'A:D', 250)
-fmt = cellFormat(
-    backgroundColor=color(.9, .9, .9),
-    textFormat=textFormat(bold=True, foregroundColor=color(0, 0, 0)),
-    horizontalAlignment='CENTER'
-    )
-
-format_cell_range(tasks_worksheet, 'A1:D1', fmt)
+    # tasks_worksheet = create_worksheet('Stock')
+    # set_with_dataframe(tasks_worksheet, stock_data)
