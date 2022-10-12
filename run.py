@@ -6,6 +6,7 @@ import datetime
 from datetime import datetime
 from datetime import date 
 import re
+import pandas as pd
 
 
 
@@ -28,6 +29,7 @@ def get_event_type():
     Request type of event from user (Open Day or Musician)
     """
     while True:
+        global event_type
         event_type=input("What type of event are you planning? Please write Open Day or Musician: ")
         if validate_event_type(event_type):
             break
@@ -87,6 +89,7 @@ def validate_event_date(date_values):
     return True
 
 def get_date_to_check():
+    global date_of_event
     date_of_event = get_event_date()
     format_ddmmyyyy = "%d/%m/%Y"
     formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
@@ -107,6 +110,24 @@ def check_date_validation(check_value):
         print(f"'{check_value}' is not a valid response. {e}\n")
         return False
     return True
+
+def get_email():
+    while True:
+        global entered_email
+        entered_email = input("What is your email address?  ")
+        print("\n")
+        if validate_email(entered_email):
+            break
+    print("Thank you for providing a valid email address so we can share the spreadsheet with you.\n")
+    return entered_email
+
+def validate_email(s):
+    pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+    if re.match(pat,s):
+        return True
+    else:
+        print("That is not a valid email address; please try again.\n")
+        return False
 
 
 
@@ -129,33 +150,79 @@ def check_date_future():
         print("less than")
 
 def create_spreadsheet():
-    spreadsheet = GSPREAD_CLIENT.create(f'{validated_event_type}: {date_of_event}')
-    spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
+    global spreadsheet
+    spreadsheet = GSPREAD_CLIENT.create(f'{event_type}: {date_of_event}')
+    spreadsheet.share(f'{entered_email}', perm_type='user', role='writer')
+    # spreadsheet = GSPREAD_CLIENT.create('test-spreadsheet')
+    # spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
+
+def create_worksheet(sheet_name, sheet_values):
+    spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20)
+    sheet_name.update([sheet_values.columns.values.tolist()] + sheet_values.values.tolist())
+
+# https://www.digitalocean.com/community/tutorials/update-rows-and-columns-python-pandas
+# https://docs.gspread.org/en/latest/user-guide.html
+
+stock_data = {
+    "Type of Stock": ['Highlighter','Luggage Tag','Pens','Pencils','Notebooks', 'Water bottles'],
+    "Number Remaining": ['', '', '', '', '', ''],
+    "Location of Stock": ['', '', '', '', '', ''],
+    "Date checked": ['', '', '', '', '', '']
+}
+
+stock_dataframe = pd.DataFrame(stock_data)
+
+attendees_data = {
+    "Name of Child": [''],
+    "Child's Year Group": [''],
+    "Child's Interests": [''],
+    "Dietary Requirements": [''],
+}
+attendees_dataframe = pd.DataFrame(attendees_data)
+
+tasks_data = {
+    "Task": [
+            'Added to Website',
+            'Option on Booking Form', 
+            'Created Zap', 
+            'Added Facebook Event',
+            'Checked Stock',
+            'Ordered New Badges',
+            'Update Social Headers/Add popup Box',
+            'Add social post / boost',
+            'Complete artwork',
+            'Add social media post(2)',
+            'Add social media post(3)',
+            'Remove option from form',
+            'Remove Social Header'
+            ],
+    "Date completed": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
+    "Person performing task": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
+    "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
+}
+
+tasks_dataframe = pd.DataFrame(tasks_data)
+
 
 
 # create_spreadsheet()
+# create_worksheet('Tasks', tasks_dataframe)
+# create_worksheet('Attendees', attendees_dataframe)
+# create_worksheet('Stock Take', stock_dataframe)
+
 
 # https://www.tutorialspoint.com/python-program-to-validate-email-address
-def get_email():
-    while True:
-        entered_email = input("What is your email address?  ")
-        print("\n")
-        if validate_email(entered_email):
-            break
-    print("Thank you for providing a valid email address so we can share the spreadsheet with you.\n")
-
-def validate_email(s):
-    pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
-    if re.match(pat,s):
-        return True
-    else:
-        print("That is not a valid email address; please try again.\n")
-        return False
 
 
 def main():
-    validated_event_type = get_event_type()
+    get_event_type()
     confirm_date()
     get_email()
+    create_spreadsheet()
+    create_worksheet('Tasks', tasks_dataframe)
+    create_worksheet('Attendees', attendees_dataframe)
+    create_worksheet('Stock Take', stock_dataframe)
 
-# main()
+main()
+
+
