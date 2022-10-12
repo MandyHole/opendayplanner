@@ -2,9 +2,10 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
-import datetime
+# import datetime
 from datetime import datetime
 from datetime import date 
+from datetime import timedelta
 import re
 import pandas as pd
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
@@ -16,7 +17,8 @@ from gspread_formatting import *
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
-    "https://www.googleapis.com/auth/drive"
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/calendar"
     ]
 
 CREDS = Credentials.from_service_account_file('creds.json')
@@ -95,8 +97,10 @@ def get_date_to_check():
     global date_of_event
     date_of_event = get_event_date()
     format_ddmmyyyy = "%d/%m/%Y"
+    global formatted_date
     formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
     # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
+    global formatted_date_no_time
     formatted_date_no_time = datetime.date(formatted_date)
     # https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday
     date_to_check = formatted_date_no_time.strftime("%A, %d. %B %Y")
@@ -133,18 +137,6 @@ def validate_email(s):
         return False
 
 
-
-
-    # datestouse
-    # date_today = date.today()
-    # format_ddmmyyyy = "%d/%m/%Y"
-    # formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
-    # # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
-    # formatted_date_no_time = datetime.date(formatted_date)
-    # # https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday
-    # date_to_check = formatted_date_no_time.strftime("%A, %d. %B %Y")
-
-
 # https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
 def check_date_future():
     if formatted_date_no_time > datetime.today().date():
@@ -156,12 +148,11 @@ def create_spreadsheet():
     global spreadsheet
     spreadsheet = GSPREAD_CLIENT.create(f'{event_type}: {date_of_event}')
     spreadsheet.share(f'{entered_email}', perm_type='user', role='writer')
-    # spreadsheet = GSPREAD_CLIENT.create('test-spreadsheet')
-    # spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
 
 def create_worksheet(sheet_name, sheet_data, final_column):
-    test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
-    new_worksheet=test_spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20)
+    # test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
+        #  change above to this once done testing to create new spreadsheet)
+    new_worksheet=spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20)
     # https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
     new_worksheet.clear()
     set_with_dataframe(worksheet=new_worksheet, dataframe=sheet_data, include_index=False,
@@ -177,8 +168,6 @@ def create_worksheet(sheet_name, sheet_data, final_column):
 
     return new_worksheet
     
-    # spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20) change above to this once done testing to create new spreadsheet)
-    # sheet_name.update([sheet_values.columns.values.tolist()] + sheet_values.values.tolist())
 
 # https://www.digitalocean.com/community/tutorials/update-rows-and-columns-python-pandas
 # https://docs.gspread.org/en/latest/user-guide.html
@@ -192,7 +181,6 @@ stock_data = pd.DataFrame({
     'Location of Stock': ['', '', '', '', '', ''],
     'Date checked': ['', '', '', '', '', '']})
 
-create_worksheet('Stock Take', stock_data, 'D')
 
 attendees_data = pd.DataFrame({
     "Name of Child": [''],
@@ -200,6 +188,8 @@ attendees_data = pd.DataFrame({
     "Child's Interests": [''],
     "Dietary Requirements": [''],
 })
+
+
 
 tasks_data = pd.DataFrame({
     "Task": [
@@ -222,20 +212,39 @@ tasks_data = pd.DataFrame({
     "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
 })
 
+musician_tasks_data = pd.DataFrame({
+    "Task": [
+            'Added to Website',
+            'Option on Booking Form', 
+            'Created Zap', 
+            'Checked Stock',
+            'Remove option from form',
+            ],
+    "Date completed": ['', '', '', '', ''],
+    "Person performing task": ['', '', '', '', ''],
+    "Notes": ['', '', '', '', '']
+})
 
-# create_spreadsheet()
-# create_worksheet('Tasks', tasks_dataframe)
-# create_worksheet('Attendees', attendees_dataframe)
-# create_worksheet('Stock Take', stock_dataframe)
 
 
 # https://www.tutorialspoint.com/python-program-to-validate-email-address
 
 
-# def main():
-#     get_event_type()
-#     confirm_date()
-#     get_email()
+def main():
+    # get_event_type()
+    confirm_date()
+    # get_email()
     # create_spreadsheet()
-    # tasks_worksheet = create_worksheet('Stock')
-    # set_with_dataframe(tasks_worksheet, stock_data)
+    # create_worksheet('Attendees', attendees_data, 'D')
+    # create_worksheet('Stock Take', stock_data, 'D')
+    # create_worksheet('Task Planner', tasks_data, 'D')
+    # create_worksheet('Musician Tasks', musician_tasks_data, 'D')
+    format_ddmmyyyy = "%d/%m/%Y"
+    formatted_final_event_date = datetime.strptime(date_of_event, format_ddmmyyyy)
+    date_today = datetime.now()
+    new_date = formatted_final_event_date + timedelta(days=10)
+    print(formatted_final_event_date)
+ 
+
+main()
+
