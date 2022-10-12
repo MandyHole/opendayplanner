@@ -7,6 +7,9 @@ from datetime import datetime
 from datetime import date 
 import re
 import pandas as pd
+from gspread_dataframe import get_as_dataframe, set_with_dataframe
+from gspread_formatting import *
+
 
 
 
@@ -156,21 +159,27 @@ def create_spreadsheet():
     # spreadsheet = GSPREAD_CLIENT.create('test-spreadsheet')
     # spreadsheet.share('mandyhole17@gmail.com', perm_type='user', role='writer')
 
-def create_worksheet(sheet_name, sheet_values):
-    spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20)
-    sheet_name.update([sheet_values.columns.values.tolist()] + sheet_values.values.tolist())
+def create_worksheet(sheet_name, neededrows, neededcols):
+    test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
+    new_spreadsheet=test_spreadsheet.add_worksheet(title=sheet_name, rows=neededrows, cols=neededcols)
+    return new_spreadsheet
+    
+    # spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20) change above to this once done testing to create new spreadsheet)
+    # sheet_name.update([sheet_values.columns.values.tolist()] + sheet_values.values.tolist())
 
 # https://www.digitalocean.com/community/tutorials/update-rows-and-columns-python-pandas
 # https://docs.gspread.org/en/latest/user-guide.html
 
-stock_data = {
-    "Type of Stock": ['Highlighter','Luggage Tag','Pens','Pencils','Notebooks', 'Water bottles'],
-    "Number Remaining": ['', '', '', '', '', ''],
-    "Location of Stock": ['', '', '', '', '', ''],
-    "Date checked": ['', '', '', '', '', '']
-}
 
-stock_dataframe = pd.DataFrame(stock_data)
+
+
+stock_data = pd.DataFrame({
+    'Type of Stock': ['Highlighter', 'Luggage Tag', 'Pens', 'Pencils', 'Notebooks', 'Water bottles'],
+    'Number Remaining': ['', '', '', '', '', ''],
+    'Location of Stock': ['', '', '', '', '', ''],
+    'Date checked': ['', '', '', '', '', '']})
+
+
 
 attendees_data = {
     "Name of Child": [''],
@@ -218,11 +227,22 @@ def main():
     get_event_type()
     confirm_date()
     get_email()
-    create_spreadsheet()
-    create_worksheet('Tasks', tasks_dataframe)
-    create_worksheet('Attendees', attendees_dataframe)
-    create_worksheet('Stock Take', stock_dataframe)
+    # create_spreadsheet()
+    tasks_worksheet = create_worksheet('Stock', 7, 4)
+    set_with_dataframe(tasks_worksheet, stock_data)
 
-main()
+# main()
+# https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
+tasks_worksheet = create_worksheet('Stock', 7, 4)
+tasks_worksheet.clear()
+set_with_dataframe(worksheet=tasks_worksheet, dataframe=stock_data, include_index=False,
+include_column_header=True, resize=True)
+tasks_worksheet.format('A1:D1', {'textFormat': {'bold': True}})
+set_column_width(tasks_worksheet, 'A:D', 250)
+fmt = cellFormat(
+    backgroundColor=color(.9, .9, .9),
+    textFormat=textFormat(bold=True, foregroundColor=color(0, 0, 0)),
+    horizontalAlignment='CENTER'
+    )
 
-
+format_cell_range(tasks_worksheet, 'A1:D1', fmt)
