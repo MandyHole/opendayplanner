@@ -2,10 +2,9 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
-# import datetime
-from datetime import datetime
-from datetime import date 
-from datetime import timedelta
+from datetime import datetime, date, timedelta
+# from datetime import date 
+# from datetime import timedelta
 import re
 import pandas as pd
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
@@ -19,9 +18,6 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive",
     "https://www.googleapis.com/auth/calendar"
-    # ,
-    # "https://www.googleapis.com/tasks/v1/lists/taskListID/tasks?parameters",
-    # "https://www.googleapis.com/tasks/v1/users/userID/lists?parameters"
     ]
 
 CREDS = Credentials.from_service_account_file('creds.json')
@@ -235,20 +231,15 @@ def calculate_reminder(x):
     date_today = datetime.now()
     if reminder <= date_today:
         reminder = date_today
-        print("This date is in the past.")
     elif reminder.strftime("%A") == "Saturday":
         reminder = formatted_final_event_date - timedelta(days=(x+1))
         if reminder <= date_today:
             reminder = date_today
-        print("This is a Saturday")
     elif reminder.strftime("%A") == "Sunday":
         reminder = formatted_final_event_date - timedelta(days=(x+2))
         if reminder <= date_today:
             reminder = date_today
-        print("This is a Sunday")
-    return print(reminder)
 
-calculate_reminder(63)
     
 # https://developers.google.com/calendar/api/v3/reference/events/insert
 def add_event_to_calendar(description, day):
@@ -284,41 +275,45 @@ def main():
     # get_event_type()
     confirm_date()
     # get_email()
-    # create_spreadsheet()
-    if event_type == "Musician":
-        create_worksheet('Task Planner', musician_tasks_data, 'D')
-        create_worksheet('Attendees', attendees_data, 'D')
-        create_worksheet('Stock Take', stock_data, 'D')
-        add_event_to_calendar('Contact Music Department and see if any boosting is required', 30)
-        add_event_to_calendar('Remove option from form', 7)
-        add_event_to_calendar('Post on social to saying looking forward to event', 1)
-        add_event_to_calendar('Please take a photo of the event today and post on social media', 0)
-        print("You will now have been shared a spreadsheet to plan the Musician Event.\n"
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
-        print("Please ensure you do the following as soon as possible:\n")
-        print("Add it as an event to the website. \n")
-        print("Add it as an option to the booking form.\n")
-        print("Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n")
-        print("Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
-        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+    # # create_spreadsheet()
+    # if event_type == "Musician":
+    #     create_worksheet('Task Planner', musician_tasks_data, 'D')
+    #     create_worksheet('Attendees', attendees_data, 'D')
+    #     create_worksheet('Stock Take', stock_data, 'D')
+    #     add_event_to_calendar('Contact Music Department and see if any boosting is required', 30)
+    #     add_event_to_calendar('Remove option from form', 7)
+    #     add_event_to_calendar('Post on social to saying looking forward to event', 1)
+    #     add_event_to_calendar('Please take a photo of the event today and post on social media', 0)
+    #     print("You will now have been shared a spreadsheet to plan the Musician Event.\n"
+    #     print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+    #     print("Please ensure you do the following as soon as possible:\n")
+    #     print("Add it as an event to the website. \n")
+    #     print("Add it as an option to the booking form.\n")
+    #     print("Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n")
+    #     print("Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+    #     print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
 
-    elif event_type == "Open Day":
-        create_worksheet('Task Planner', tasks_data, 'D')
-        create_worksheet('Attendees', attendees_data, 'D')
-        create_worksheet('Stock Take', stock_data, 'D')
-        add_event_to_calendar('Please remember to check the stock (enter into Stock worksheet), order staff badges and update the social headers.', 60)
-        add_event_to_calendar('Please remember to add post to social media, boost if required and prepare artwork for next Open Day', 30)
-        add_event_to_calendar('Please remember to post reminder on social media', 7)
-        add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
-        add_event_to_calendar('Please remember to remove option from form', 0)
-        print("You will now have been shared a spreadsheet to plan the Open Day.\n"
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
-        print("Please ensure you do the following as soon as possible:\n")
-        print("Add it as an event to the website and Facebook. \n")
-        print("Add it as an option to the booking form.\n")
-        print("Create a zap to link the Open Day Signup form to the Attendees worksheet.\n")
-        print("Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
-        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+    # elif event_type == "Open Day":
+    #     create_worksheet('Task Planner', tasks_data, 'D')
+    #     create_worksheet('Attendees', attendees_data, 'D')
+    #     create_worksheet('Stock Take', stock_data, 'D')
+    #     add_event_to_calendar('Please remember to check the stock (enter into Stock worksheet), order staff badges and update the social headers.', 60)
+    #     add_event_to_calendar('Please remember to add post to social media, boost if required and prepare artwork for next Open Day', 30)
+    #     add_event_to_calendar('Please remember to post reminder on social media', 7)
+    #     add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
+    #     add_event_to_calendar('Please remember to remove option from form', 0)
+    #     print("You will now have been shared a spreadsheet to plan the Open Day.\n"
+    #     print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+    #     print("Please ensure you do the following as soon as possible:\n")
+    #     print("Add it as an event to the website and Facebook. \n")
+    #     print("Add it as an option to the booking form.\n")
+    #     print("Create a zap to link the Open Day Signup form to the Attendees worksheet.\n")
+    #     print("Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+    #     print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+    # else:
+    #     print("That is not a valid event type. Please try again.")
+    #     get_event_type()
 
 
 main()
+calculate_reminder(63)
