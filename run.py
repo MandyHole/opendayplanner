@@ -228,37 +228,9 @@ musician_tasks_data = pd.DataFrame({
     "Notes": ['', '', '', '', '']
 })
 
-
-
-# https://www.tutorialspoint.com/python-program-to-validate-email-address
-
-
-def main():
-    # get_event_type()
-    confirm_date()
-    # get_email()
-    # create_spreadsheet()
-    # create_worksheet('Attendees', attendees_data, 'D')
-    # create_worksheet('Stock Take', stock_data, 'D')
-    # create_worksheet('Task Planner', tasks_data, 'D')
-    # create_worksheet('Musician Tasks', musician_tasks_data, 'D')
+def calculate_reminder(x):
     format_ddmmyyyy = "%d/%m/%Y"
     formatted_final_event_date = datetime.strptime(date_of_event, format_ddmmyyyy)
-    date_today = datetime.now()
-    new_date = formatted_final_event_date + timedelta(days=10)
-    print(formatted_final_event_date)
-    print(formatted_final_event_date - date_today)
-    date_difference = formatted_final_event_date - date_today
-    if date_difference > 60:
-        print('more than 60')
-    else:
-        print('less than 20')
- 
-
-# main()
-
-
-def calculate_reminder(x):
     reminder = formatted_final_event_date - timedelta(days=x)
     date_today = datetime.now()
     if reminder <= date_today:
@@ -276,6 +248,65 @@ def calculate_reminder(x):
         print("This is a Sunday")
     return print(reminder)
 
-formatted_final_event_date = datetime(2023, 2, 19, 12, 0, 0)
 calculate_reminder(63)
     
+# https://developers.google.com/calendar/api/v3/reference/events/insert
+def add_event_to_calendar(description, day):
+    event = {
+    'summary': f'{event_type}: {date_of_event} Tasks to Complete', 
+    'description': f'It is about {day} days until the event. Open the {event_type}: {date_of_event} spreadsheet. {description} Complete the Task Planner Spreadsheet.',
+    'start': {
+        'dateTime': calculate_reminder(day),
+        'timeZone': 'Europe/London',
+    'transparency': 'transparent',
+    },
+    'end': {
+        'dateTime': calculate_reminder(day) + timedelta(hours=1),
+        'timeZone': 'Europe/London',
+    },
+    'attendees': [
+        {'email': entered_email},
+    ],
+    'reminders': {
+        'useDefault': False,
+        'overrides': [
+        {'method': 'email', 'minutes': 0},
+        {'method': 'popup', 'minutes': 10},
+        ],
+    },
+    }
+    event = service.events().insert(calendarId='primary', body=event).execute()
+
+# https://www.tutorialspoint.com/python-program-to-validate-email-address
+
+
+def main():
+    # get_event_type()
+    confirm_date()
+    # get_email()
+    # create_spreadsheet()
+    if event_type == "Musician":
+        create_worksheet('Task Planner', musician_tasks_data, 'D')
+        create_worksheet('Attendees', attendees_data, 'D')
+        create_worksheet('Stock Take', stock_data, 'D')
+
+    elif event_type == "Open Day":
+        create_worksheet('Task Planner', tasks_data, 'D')
+        create_worksheet('Attendees', attendees_data, 'D')
+        create_worksheet('Stock Take', stock_data, 'D')
+        add_event_to_calendar('Please remember to check the stock (enter into Stock worksheet), order staff badges and update the social headers.', 60)
+        add_event_to_calendar('Please remember to add post to social media, boost if required and prepare artwork for next Open Day', 30)
+        add_event_to_calendar('Please remember to post reminder on social media', 7)
+        add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
+        add_event_to_calendar('Please remember to remove option from form', 0)
+        print("You will now have been shared a spreadsheet to plan the Open Day.\n"
+        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        print("Please ensure you do the following as soon as possible:\n")
+        print("Add it as an event to the website and Facebook. \n")
+        print("Add it as an option to the booking form.\n")
+        print("Create a zap to link the WP form to the Attendees worksheet.\n")
+        print("Ensure you initial and date these are complete using the Task Planner Worksheet.\n")
+        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+
+
+main()
