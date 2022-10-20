@@ -19,6 +19,9 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive",
     "https://www.googleapis.com/auth/calendar"
+    # ,
+    # "https://www.googleapis.com/tasks/v1/lists/taskListID/tasks?parameters",
+    # "https://www.googleapis.com/tasks/v1/users/userID/lists?parameters"
     ]
 
 CREDS = Credentials.from_service_account_file('creds.json')
@@ -244,7 +247,35 @@ def main():
     date_today = datetime.now()
     new_date = formatted_final_event_date + timedelta(days=10)
     print(formatted_final_event_date)
+    print(formatted_final_event_date - date_today)
+    date_difference = formatted_final_event_date - date_today
+    if date_difference > 60:
+        print('more than 60')
+    else:
+        print('less than 20')
  
 
-main()
+# main()
 
+
+def calculate_reminder(x):
+    reminder = formatted_final_event_date - timedelta(days=x)
+    date_today = datetime.now()
+    if reminder <= date_today:
+        reminder = date_today
+        print("This date is in the past.")
+    elif reminder.strftime("%A") == "Saturday":
+        reminder = formatted_final_event_date - timedelta(days=(x+1))
+        if reminder <= date_today:
+            reminder = date_today
+        print("This is a Saturday")
+    elif reminder.strftime("%A") == "Sunday":
+        reminder = formatted_final_event_date - timedelta(days=(x+2))
+        if reminder <= date_today:
+            reminder = date_today
+        print("This is a Sunday")
+    return print(reminder)
+
+formatted_final_event_date = datetime(2023, 2, 19, 12, 0, 0)
+calculate_reminder(63)
+    
