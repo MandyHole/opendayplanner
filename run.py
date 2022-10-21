@@ -3,8 +3,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime, date, timedelta
-# from datetime import date 
-# from datetime import timedelta
 import re
 import pandas as pd
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
@@ -63,10 +61,8 @@ def get_event_date():
     while True:
         event_date = input("Event date: \n")
         if validate_event_date(event_date):
-            return event_date
             break
-    
-   
+    return event_date
 
 def confirm_date():
     final_date_to_check = get_date_to_check()    
@@ -77,7 +73,6 @@ def confirm_date():
     if checkDate == "N":
         confirm_date()
 
-
 def validate_event_date(date_values):
     """ 
     check date provided is a valid date
@@ -85,12 +80,26 @@ def validate_event_date(date_values):
     # https://theprogrammingexpert.com/check-if-string-is-date-in-python/#:~:text=To%20check%20if%20a%20string,string%20and%20a%20date%20format.&text=When%20working%20with%20strings%20in,date%20can%20be%20very%20useful.
 
     format_ddmmyyyy = "%d/%m/%Y"
+    # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
+    date_today = datetime.now()
     try:
-        date = datetime.strptime(date_values, format_ddmmyyyy)
-    except ValueError:
-        print("Please ensure you use the format dd/mm/yyyy.")
+        if date == datetime.strptime(date_values, format_ddmmyyyy) or datetime.strptime(date_values, format_ddmmyyyy) <= date_today:
+            raise ValueError ("Please ensure you use the format dd/mm/yyyy and that the date is in the future.")
+    except ValueError as e:
+        print(f"Please ensure you use the format dd/mm/yyyy and that the date is in the future.")
+        print(f"{date_values}' is not a valid response. {e}\n")
         return False
     return True
+
+    # try:
+    #     if check_value != "Y" and check_value != "N":
+    #         raise ValueError (
+    #             "Please input 'Y' for yes or 'N' for no, ensuring you use a capital letter."
+    #         )
+    # except ValueError as e:
+    #     print(f"'{check_value}' is not a valid response. {e}\n")
+    #     return False
+    # return True
 
 def get_date_to_check():
     global date_of_event
@@ -316,4 +325,4 @@ def main():
 
 
 main()
-calculate_reminder(63)
+print(date_of_event)
