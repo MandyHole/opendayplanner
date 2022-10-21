@@ -7,7 +7,7 @@ import re
 import pandas as pd
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from gspread_formatting import *
-from time import sleep
+import asyncio
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -81,8 +81,8 @@ def get_event_type():
     """
     while True:
         print("Please specify the type of event that you are planning.")
-        print("This could be 'Open Day' or 'Musician'.")
-        print("Please ensure you use initial caps.")
+        print("* This could be 'Open Day' or 'Musician'.")
+        print("* Please ensure you use initial caps.\n")
         global event_type
         event_type = input("Type of event: ")
         if validate_event_type(event_type):
@@ -116,9 +116,10 @@ def get_event_date():
     print("Please provide the date of the event.")
     print("Use the format dd/mm/yyyy) \n")
     while True:
-        event_date = input("Event date: \n")
+        event_date = input("Event date: ")
         if validate_event_date(event_date):
             break
+    print("\n")
     return event_date
 
 
@@ -173,7 +174,7 @@ def confirm_date():
     Enables user to confirm that the date provided is the correct date.
     If not, loops back to ask for the date again.
     """
-    # final_date_to_check = get_date_to_check()    
+    get_date_to_check()    
     while True:
         checkDate = input("Is this correct (Y/N)? \n")
         if check_date_validation(checkDate):
@@ -328,9 +329,10 @@ def add_event_to_calendar(description, day):
     event = service.events().insert(calendarId='primary', body=event).execute()
 
 
-def main():
+async def main():
     """
-    Runs all functions for the programe to work"""
+    Runs all functions for the programe to work
+    """
     get_event_type()
     confirm_date()
     get_email()
@@ -344,14 +346,21 @@ def main():
         # add_event_to_calendar('Remove option from form', 7)
         # add_event_to_calendar('Post on social to saying looking forward to event', 1)
         # add_event_to_calendar('Please take a photo of the event today and post on social media', 0)
-        # https://stackoverflow.com/questions/17432478/python-print-to-one-line-with-time-delay-between-prints
-        print("You will now have been shared a spreadsheet to plan the Musician Event.\n") ; sleep(3.3)
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n") ; sleep(3.3)
-        print("Please ensure you do the following as soon as possible:\n") ; sleep(3.3)
-        print("* Add it as an event to the website. \n") ; sleep(3.3)
-        print("* Add it as an option to the booking form.\n") ; sleep(3.3)
-        print("* Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n") ; sleep(3.3)
-        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n") ; sleep(3.3)
+        # https://docs.python.org/3/library/asyncio.html
+        print("You will now have been shared a spreadsheet to plan the Musician Event.\n")
+        await asyncio.sleep(3)
+        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        await asyncio.sleep(3)
+        print("Please ensure you do the following as soon as possible:\n")
+        await asyncio.sleep(3)
+        print("* Add it as an event to the website. \n")
+        await asyncio.sleep(3)
+        print("* Add it as an option to the booking form.\n")
+        await asyncio.sleep(3)
+        print("* Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n")
+        await asyncio.sleep(3)
+        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+        await asyncio.sleep(3)
         print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
 
     elif event_type == "Open Day":
@@ -363,13 +372,20 @@ def main():
     #     add_event_to_calendar('Please remember to post reminder on social media', 7)
     #     add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
     #     add_event_to_calendar('Please remember to remove option from form', 0)
-        print("You will now have been shared a spreadsheet to plan the Open Day.\n") ; sleep(3.1)
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n") ; sleep(3.2)
-        print("Please ensure you do the following as soon as possible:\n") ; sleep(3.3)
-        print("* Add it as an event to the website and Facebook. \n") ; sleep(3.4)
-        print("* Add it as an option to the booking form.\n") ; sleep(3.5)
-        print("* Create a zap to link the Open Day Signup form to the Attendees worksheet.\n") ; sleep(3.6)
-        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n") ; sleep(3.7)
+        print("You will now have been shared a spreadsheet to plan the Open Day.\n")
+        await asyncio.sleep(3)
+        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        await asyncio.sleep(3)
+        print("Please ensure you do the following as soon as possible:\n")
+        await asyncio.sleep(3)
+        print("* Add it as an event to the website and Facebook. \n")
+        await asyncio.sleep(3)
+        print("* Add it as an option to the booking form.\n")
+        await asyncio.sleep(3)
+        print("* Create a zap to link the Open Day Signup form to the Attendees worksheet.\n")
+        await asyncio.sleep(3)
+        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+        await asyncio.sleep(3)
         print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
 
-main()
+asyncio.run(main())
