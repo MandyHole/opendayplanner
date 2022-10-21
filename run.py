@@ -7,6 +7,7 @@ import re
 import pandas as pd
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from gspread_formatting import *
+from time import sleep
 
 
 
@@ -23,12 +24,59 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 
 
+stock_data = pd.DataFrame({
+    'Type of Stock': ['Highlighter', 'Luggage Tag', 'Pens', 'Pencils', 'Notebooks', 'Water Bottles'],
+    'Number Remaining': ['', '', '', '', '', ''],
+    'Location of Stock': ['', '', '', '', '', ''],
+    'Date checked': ['', '', '', '', '', '']})
+
+attendees_data = pd.DataFrame({
+    "Name of Child": [''],
+    "Child's Year Group": [''],
+    "Child's Interests": [''],
+    "Dietary Requirements": [''],
+})
+
+tasks_data = pd.DataFrame({
+    "Task": [
+            'Added to Website',
+            'Option on Booking Form', 
+            'Created Zap', 
+            'Added Facebook Event',
+            'Checked Stock',
+            'Ordered New Badges',
+            'Update Social Headers/Add Popup Box',
+            'Add Social Post / Boost',
+            'Complete New Artwork',
+            'Add Social Media Post(2)',
+            'Add Social Media Post(3)',
+            'Remove Option From Form',
+            'Remove Social Header'
+            ],
+    "Date Completed": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
+    "Person Performing Task": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
+    "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
+})
+
+musician_tasks_data = pd.DataFrame({
+    "Task": [
+            'Added to Website',
+            'Option on Booking Form', 
+            'Created Zap', 
+            'Checked Stock',
+            'Remove Option From Form',
+            ],
+    "Date Completed": ['', '', '', '', ''],
+    "Person Performing Task": ['', '', '', '', ''],
+    "Notes": ['', '', '', '', '']
+})
 
 print("Welcome to the Open Day Planner. I hope it helps to make the event run seamlessly!\n")
 
 def get_event_type():
     """
-    Request type of event from user (Open Day or Musician)
+    Requests the type of event from user (Open Day or Musician).
+    Loops until the user inputs a correct value.
     """
     while True:
         global event_type
@@ -39,7 +87,8 @@ def get_event_type():
 
 def validate_event_type(values):
     """ 
-    Check user input Open Day or Musician
+    Checks user input 'Open Day' or 'Musician'
+    Produces a value error if not and triggers loop to ask again.
     """
     try:
         if values != "Open Day" and values != "Musician":
@@ -54,7 +103,9 @@ def validate_event_type(values):
 
 def get_event_date():
     """
-    Get input from user about date of event
+    Get input from user about date of event.
+    Sends input through validation.
+    Loops until a correctly formatted date in future is input.
     """
     print("\n")
     print("Please provide the date of the event (use the format dd/mm/yyyy) \n")
@@ -64,20 +115,14 @@ def get_event_date():
             break
     return event_date
 
-def confirm_date():
-    final_date_to_check = get_date_to_check()    
-    while True:
-        checkDate = input("Is this correct (Y/N)? \n")
-        if check_date_validation(checkDate):
-            break
-    if checkDate == "N":
-        confirm_date()
-
 def validate_event_date(date_values):
     """ 
-    check date provided is a valid date
+    Checks the date provided is formatted correctly.
+    Checks the date provided is in the future.
+    Produces a value error if either condition isn't met.
     """
     # https://theprogrammingexpert.com/check-if-string-is-date-in-python/#:~:text=To%20check%20if%20a%20string,string%20and%20a%20date%20format.&text=When%20working%20with%20strings%20in,date%20can%20be%20very%20useful.
+    # https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
 
     format_ddmmyyyy = "%d/%m/%Y"
     # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
@@ -91,17 +136,11 @@ def validate_event_date(date_values):
         return False
     return True
 
-    # try:
-    #     if check_value != "Y" and check_value != "N":
-    #         raise ValueError (
-    #             "Please input 'Y' for yes or 'N' for no, ensuring you use a capital letter."
-    #         )
-    # except ValueError as e:
-    #     print(f"'{check_value}' is not a valid response. {e}\n")
-    #     return False
-    # return True
-
 def get_date_to_check():
+    """
+    Reformats date into a format with Day and Month spelled out
+    Prints date to user to check to ensure it is correct.
+    """
     global date_of_event
     date_of_event = get_event_date()
     format_ddmmyyyy = "%d/%m/%Y"
@@ -114,8 +153,25 @@ def get_date_to_check():
     date_to_check = formatted_date_no_time.strftime("%A, %d. %B %Y")
     print(f"You provided this date: {date_to_check}")
     return date_to_check
+
+def confirm_date():
+    """
+    Enables user to confirm that the date provided is the correct date.
+    If not, loops back to ask for the date again.
+    """
+    final_date_to_check = get_date_to_check()    
+    while True:
+        checkDate = input("Is this correct (Y/N)? \n")
+        if check_date_validation(checkDate):
+            break
+    if checkDate == "N":
+        confirm_date()
     
 def check_date_validation(check_value):
+    """
+    Checks user input Y or N to confirm date.
+    Produces value error if not.
+    """
     try:
         if check_value != "Y" and check_value != "N":
             raise ValueError (
@@ -127,16 +183,28 @@ def check_date_validation(check_value):
     return True
 
 def get_email():
+    """
+    Asks user to input their email address.
+    Loops until a valid email address is provided.
+    Prints statements to say what email will be used for.
+    """
+    print("We need your email address so you can have access to the spreadsheet and reminders")
     while True:
         global entered_email
         entered_email = input("What is your email address?  ")
         print("\n")
         if validate_email(entered_email):
             break
-    print("Thank you for providing a valid email address so we can share the spreadsheet with you.\n")
+    print("Thank you for providing a valid email address so we can share the Google spreadsheet and reminders with you.\n")
+    print("Please be patient as it may take a minute for the spreadsheet to be created.\n")
     return entered_email
 
 def validate_email(s):
+    """
+    Checks to ensure the email address provided is in the correct format.
+    Prints a statement if incorrect format.
+    """
+    # https://www.tutorialspoint.com/python-program-to-validate-email-address
     pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
     if re.match(pat,s):
         return True
@@ -144,20 +212,21 @@ def validate_email(s):
         print("That is not a valid email address; please try again.\n")
         return False
 
-
-# https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
-def check_date_future():
-    if formatted_date_no_time > datetime.today().date():
-        print("greater than")
-    elif formatted_date_no_time < datetime.today().date():
-        print("less than")
-
 def create_spreadsheet():
+    """
+    Creates a spreadsheet that is shared with user's email.
+    Spreadsheet is titled with the event type and date.
+    """
     global spreadsheet
     spreadsheet = GSPREAD_CLIENT.create(f'{event_type}: {date_of_event}')
     spreadsheet.share(f'{entered_email}', perm_type='user', role='writer')
 
 def create_worksheet(sheet_name, sheet_data, final_column):
+    """
+    Adds a new worksheet to the spreadsheet created for the event.
+    Inputs dataframes for content.
+    Adds formatting to header row.
+    """
     # test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
         #  change above to this once done testing to create new spreadsheet)
     new_worksheet=spreadsheet.add_worksheet(title=sheet_name, rows=100, cols=20)
@@ -166,14 +235,13 @@ def create_worksheet(sheet_name, sheet_data, final_column):
     set_with_dataframe(worksheet=new_worksheet, dataframe=sheet_data, include_index=False,
     include_column_header=True, resize=True)
     # https://github.com/robin900/gspread-formatting
-    set_column_width(new_worksheet, 'A:D', 250)
+    set_column_width(new_worksheet, f'A:{final_column}', 250)
     fmt = cellFormat(
         backgroundColor=color(.9, .9, .9),
         textFormat=textFormat(bold=True, foregroundColor=color(0, 0, 0)),
         horizontalAlignment='CENTER'
         )
     format_cell_range(new_worksheet, f'A1:{final_column}1', fmt)
-
     return new_worksheet
     
 
@@ -181,59 +249,12 @@ def create_worksheet(sheet_name, sheet_data, final_column):
 # https://docs.gspread.org/en/latest/user-guide.html
 
 
-
-
-stock_data = pd.DataFrame({
-    'Type of Stock': ['Highlighter', 'Luggage Tag', 'Pens', 'Pencils', 'Notebooks', 'Water bottles'],
-    'Number Remaining': ['', '', '', '', '', ''],
-    'Location of Stock': ['', '', '', '', '', ''],
-    'Date checked': ['', '', '', '', '', '']})
-
-
-attendees_data = pd.DataFrame({
-    "Name of Child": [''],
-    "Child's Year Group": [''],
-    "Child's Interests": [''],
-    "Dietary Requirements": [''],
-})
-
-
-
-tasks_data = pd.DataFrame({
-    "Task": [
-            'Added to Website',
-            'Option on Booking Form', 
-            'Created Zap', 
-            'Added Facebook Event',
-            'Checked Stock',
-            'Ordered New Badges',
-            'Update Social Headers/Add popup Box',
-            'Add social post / boost',
-            'Complete artwork',
-            'Add social media post(2)',
-            'Add social media post(3)',
-            'Remove option from form',
-            'Remove Social Header'
-            ],
-    "Date completed": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
-    "Person performing task": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
-    "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
-})
-
-musician_tasks_data = pd.DataFrame({
-    "Task": [
-            'Added to Website',
-            'Option on Booking Form', 
-            'Created Zap', 
-            'Checked Stock',
-            'Remove option from form',
-            ],
-    "Date completed": ['', '', '', '', ''],
-    "Person performing task": ['', '', '', '', ''],
-    "Notes": ['', '', '', '', '']
-})
-
 def calculate_reminder(x):
+    """
+    Adjusts the calendar reminder dates.
+    Ensures event doesn't occur in the past.
+    Ensures event doesn't occur on a weekend.
+    """
     format_ddmmyyyy = "%d/%m/%Y"
     formatted_final_event_date = datetime.strptime(date_of_event, format_ddmmyyyy)
     reminder = formatted_final_event_date - timedelta(days=x)
@@ -252,6 +273,11 @@ def calculate_reminder(x):
     
 # https://developers.google.com/calendar/api/v3/reference/events/insert
 def add_event_to_calendar(description, day):
+    """
+    Adds a reminder to the user's calendar using email provided.
+    Includes customised description with tasks needed.
+    Date of reminder is in relation to date of event.
+    """
     event = {
     'summary': f'{event_type}: {date_of_event} Tasks to Complete', 
     'description': f'It is about {day} days until the event. Open the {event_type}: {date_of_event} spreadsheet. {description} Complete the Task Planner Spreadsheet.',
@@ -277,52 +303,50 @@ def add_event_to_calendar(description, day):
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
 
-# https://www.tutorialspoint.com/python-program-to-validate-email-address
+
 
 
 def main():
-    # get_event_type()
+    """
+    Runs all functions for the programe to work"""
+    get_event_type()
     confirm_date()
-    # get_email()
-    # # create_spreadsheet()
-    # if event_type == "Musician":
-    #     create_worksheet('Task Planner', musician_tasks_data, 'D')
-    #     create_worksheet('Attendees', attendees_data, 'D')
-    #     create_worksheet('Stock Take', stock_data, 'D')
+    get_email()
+    # create_spreadsheet()
+    if event_type == "Musician":
+        # create_worksheet('Task Planner', musician_tasks_data, 'D')
+        # create_worksheet('Attendees', attendees_data, 'D')
+        # create_worksheet('Stock Take', stock_data, 'D')
     #     add_event_to_calendar('Contact Music Department and see if any boosting is required', 30)
     #     add_event_to_calendar('Remove option from form', 7)
     #     add_event_to_calendar('Post on social to saying looking forward to event', 1)
     #     add_event_to_calendar('Please take a photo of the event today and post on social media', 0)
-    #     print("You will now have been shared a spreadsheet to plan the Musician Event.\n"
-    #     print("You also will have reminders in your Calendar on what you need to do going forward.\n")
-    #     print("Please ensure you do the following as soon as possible:\n")
-    #     print("Add it as an event to the website. \n")
-    #     print("Add it as an option to the booking form.\n")
-    #     print("Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n")
-    #     print("Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
-    #     print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+        print("You will now have been shared a spreadsheet to plan the Musician Event.\n") ; sleep(3.3)
+        print("You also will have reminders in your Calendar on what you need to do going forward.\n") ; sleep(3.3)
+        print("Please ensure you do the following as soon as possible:\n") ; sleep(3.3)
+        print("* Add it as an event to the website. \n") ; sleep(3.3)
+        print("* Add it as an option to the booking form.\n") ; sleep(3.3)
+        print("* Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n") ; sleep(3.3)
+        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n") ; sleep(3.3)
+        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
 
-    # elif event_type == "Open Day":
-    #     create_worksheet('Task Planner', tasks_data, 'D')
-    #     create_worksheet('Attendees', attendees_data, 'D')
-    #     create_worksheet('Stock Take', stock_data, 'D')
+    elif event_type == "Open Day":
+        # create_worksheet('Task Planner', tasks_data, 'D')
+        # create_worksheet('Attendees', attendees_data, 'D')
+        # create_worksheet('Stock Take', stock_data, 'D')
     #     add_event_to_calendar('Please remember to check the stock (enter into Stock worksheet), order staff badges and update the social headers.', 60)
     #     add_event_to_calendar('Please remember to add post to social media, boost if required and prepare artwork for next Open Day', 30)
     #     add_event_to_calendar('Please remember to post reminder on social media', 7)
     #     add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
     #     add_event_to_calendar('Please remember to remove option from form', 0)
-    #     print("You will now have been shared a spreadsheet to plan the Open Day.\n"
-    #     print("You also will have reminders in your Calendar on what you need to do going forward.\n")
-    #     print("Please ensure you do the following as soon as possible:\n")
-    #     print("Add it as an event to the website and Facebook. \n")
-    #     print("Add it as an option to the booking form.\n")
-    #     print("Create a zap to link the Open Day Signup form to the Attendees worksheet.\n")
-    #     print("Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
-    #     print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
-    # else:
-    #     print("That is not a valid event type. Please try again.")
-    #     get_event_type()
+        print("You will now have been shared a spreadsheet to plan the Open Day.\n") ; sleep(3.1)
+        print("You also will have reminders in your Calendar on what you need to do going forward.\n") ; sleep(3.2)
+        print("Please ensure you do the following as soon as possible:\n") ; sleep(3.3)
+        print("* Add it as an event to the website and Facebook. \n") ; sleep(3.4)
+        print("* Add it as an option to the booking form.\n") ; sleep(3.5)
+        print("* Create a zap to link the Open Day Signup form to the Attendees worksheet.\n") ; sleep(3.6)
+        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n") ; sleep(3.7)
+        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
 
 
 main()
-print(date_of_event)
