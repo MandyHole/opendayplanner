@@ -80,9 +80,6 @@ def get_event_type():
     Loops until the user inputs a correct value.
     """
     while True:
-        print("Please specify the type of event that you are planning.")
-        print("* This could be 'Open Day' or 'Musician'.")
-        print("* Please ensure you use initial caps.\n")
         global event_type
         event_type = input("Type of event: ")
         if validate_event_type(event_type):
@@ -144,8 +141,7 @@ def validate_event_date(date_values):
                 "Use the format dd/mm/yyyy and check it is in the future.")
     except ValueError as e:
         print("Please ensure you use the format dd/mm/yyyy.")
-        print("Please also ensure that the date is in the future.")
-        print(f"{date_values}' is not a valid response. {e}\n")
+        print("Please also ensure that the date is in the future.\n")
         return False
     return True
 
@@ -176,7 +172,7 @@ def confirm_date():
     """
     get_date_to_check()    
     while True:
-        checkDate = input("Is this correct (Y/N)? \n")
+        checkDate = input("Is this date correct (Y/N)? \n")
         if check_date_validation(checkDate):
             break
     if checkDate == "N":
@@ -205,6 +201,7 @@ def get_email():
     Loops until a valid email address is provided.
     Prints statements to say what email will be used for.
     """
+    print("\n")
     print("Your email address enables access to a spreadsheet and reminders")
     while True:
         global entered_email
@@ -333,6 +330,9 @@ async def main():
     """
     Runs all functions for the programe to work
     """
+    print("Please specify the type of event that you are planning.")
+    print("* This could be 'Open Day' or 'Musician'.")
+    print("* Please ensure you use initial caps.\n")
     get_event_type()
     confirm_date()
     get_email()
