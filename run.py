@@ -1,13 +1,12 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
-
-import gspread
-from google.oauth2.service_account import Credentials
 from datetime import datetime, date, timedelta
 import re
-import pandas as pd
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
-from gspread_formatting import *
 import asyncio
+import gspread
+from google.oauth2.service_account import Credentials
+import pandas as pd
+from gspread_dataframe import set_with_dataframe
+from gspread_formatting import *
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -22,7 +21,7 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 
 
 stock_data = pd.DataFrame({
-    'Type of Stock': ['Highlighter', 'Luggage Tag', 'Pens', 
+    'Type of Stock': ['Highlighter', 'Luggage Tag', 'Pens',
                       'Pencils', 'Notebooks', 'Water Bottles'],
     'Number Remaining': ['', '', '', '', '', ''],
     'Location of Stock': ['', '', '', '', '', ''],
@@ -38,8 +37,8 @@ attendees_data = pd.DataFrame({
 tasks_data = pd.DataFrame({
     "Task": [
             'Added to Website',
-            'Option on Booking Form', 
-            'Created Zap', 
+            'Option on Booking Form',
+            'Created Zap',
             'Added Facebook Event',
             'Checked Stock',
             'Ordered New Badges',
@@ -52,7 +51,7 @@ tasks_data = pd.DataFrame({
             'Remove Social Header'
             ],
     "Date Completed": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
-    "Person Performing Task": ['', '', '', '', '', '', 
+    "Person Performing Task": ['', '', '', '', '', '',
                                '', '', '', '', '', '', ''],
     "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
 })
@@ -60,8 +59,8 @@ tasks_data = pd.DataFrame({
 musician_tasks_data = pd.DataFrame({
     "Task": [
             'Added to Website',
-            'Option on Booking Form', 
-            'Created Zap', 
+            'Option on Booking Form',
+            'Created Zap',
             'Checked Stock',
             'Remove Option From Form',
             ],
@@ -80,15 +79,15 @@ def get_event_type():
     Loops until the user inputs a correct value.
     """
     while True:
-        global event_type
-        event_type = input("Type of event: ")
-        if validate_event_type(event_type):
+        global EVENT_TYPE
+        EVENT_TYPE = input("Type of event: ")
+        if validate_event_type(EVENT_TYPE):
             break
-    return event_type
+    return EVENT_TYPE
 
 
 def validate_event_type(values):
-    """ 
+    """
     Checks user input 'Open Day' or 'Musician'
     Produces a value error if not and triggers loop to ask again.
     """
@@ -121,7 +120,7 @@ def get_event_date():
 
 
 def validate_event_date(date_values):
-    """ 
+    """
     Checks the date provided is formatted correctly.
     Checks the date provided is in the future.
     Produces a value error if either condition isn't met.
@@ -133,15 +132,14 @@ def validate_event_date(date_values):
     # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
     date_today = datetime.now()
     try:
-        if date == datetime.strptime(date_values, 
+        if date == datetime.strptime(date_values,
                                      format_ddmmyyyy) or \
-            datetime.strptime(date_values, 
+            datetime.strptime(date_values,
                               format_ddmmyyyy) <= date_today:
             raise ValueError(
                 "Use the format dd/mm/yyyy and check it is in the future.")
     except ValueError as e:
-        print("Please ensure you use the format dd/mm/yyyy.")
-        print("Please also ensure that the date is in the future.\n")
+        print(f"'{date_values}' is not a valid response. {e}\n")
         return False
     return True
 
@@ -154,10 +152,8 @@ def get_date_to_check():
     global date_of_event
     date_of_event = get_event_date()
     format_ddmmyyyy = "%d/%m/%Y"
-    global formatted_date
     formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
     # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
-    global formatted_date_no_time
     formatted_date_no_time = datetime.date(formatted_date)
     # https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday
     date_to_check = formatted_date_no_time.strftime("%A, %d. %B %Y")
@@ -170,7 +166,7 @@ def confirm_date():
     Enables user to confirm that the date provided is the correct date.
     If not, loops back to ask for the date again.
     """
-    get_date_to_check()    
+    get_date_to_check()
     while True:
         checkDate = input("Is this date correct (Y/N)? \n")
         if check_date_validation(checkDate):
@@ -235,7 +231,7 @@ def create_spreadsheet():
     Spreadsheet is titled with the event type and date.
     """
     global spreadsheet
-    spreadsheet = GSPREAD_CLIENT.create(f'{event_type}: {date_of_event}')
+    spreadsheet = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {date_of_event}')
     spreadsheet.share(f'{entered_email}', perm_type='user', role='writer')
 
 
@@ -247,11 +243,11 @@ def create_worksheet(sheet_name, sheet_data, final_column):
     """
     # test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
     #  change above to this once done testing to create new spreadsheet)
-    new_worksheet = spreadsheet.add_worksheet(title=sheet_name, 
+    new_worksheet = spreadsheet.add_worksheet(title=sheet_name,
                                               rows=100, cols=20)
     # https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
     new_worksheet.clear()
-    set_with_dataframe(worksheet=new_worksheet, 
+    set_with_dataframe(worksheet=new_worksheet,
                        dataframe=sheet_data, include_index=False,
                        include_column_header=True, resize=True)
     # https://github.com/robin900/gspread-formatting
@@ -274,7 +270,7 @@ def calculate_reminder(x):
     Ensures event doesn't occur on a weekend.
     """
     format_ddmmyyyy = "%d/%m/%Y"
-    formatted_final_event_date = datetime.strptime(date_of_event, 
+    formatted_final_event_date = datetime.strptime(date_of_event,
                                                    format_ddmmyyyy)
     reminder = formatted_final_event_date - timedelta(days=x)
     date_today = datetime.now()
@@ -289,7 +285,7 @@ def calculate_reminder(x):
         if reminder <= date_today:
             reminder = date_today
 
-    
+
 # https://developers.google.com/calendar/api/v3/reference/events/insert
 def add_event_to_calendar(description, day):
     """
@@ -298,9 +294,9 @@ def add_event_to_calendar(description, day):
     Date of reminder is in relation to date of event.
     """
     event = {
-        'summary': f'{event_type}: {date_of_event} Tasks to Complete', 
+        'summary': f'{EVENT_TYPE}: {date_of_event} Tasks to Complete',
         'description': f'It is about {day} days until the event. Open the \
-            {event_type}: {date_of_event} spreadsheet. {description} \
+            {EVENT_TYPE}: {date_of_event} spreadsheet. {description} \
                 Complete the Task Planner Spreadsheet.',
         'start': {
             'dateTime': calculate_reminder(day),
@@ -337,19 +333,24 @@ async def main():
     confirm_date()
     get_email()
     # create_spreadsheet()
-    if event_type == "Musician":
+    if EVENT_TYPE == "Musician":
         # create_worksheet('Task Planner', musician_tasks_data, 'D')
         # create_worksheet('Attendees', attendees_data, 'D')
         # create_worksheet('Stock Take', stock_data, 'D')
         # add_event_to_calendar('Contact Music Department \
         #   and see if any boosting is required', 30)
         # add_event_to_calendar('Remove option from form', 7)
-        # add_event_to_calendar('Post on social to saying looking forward to event', 1)
-        # add_event_to_calendar('Please take a photo of the event today and post on social media', 0)
+        # add_event_to_calendar(
+        #   'Post on social to saying looking forward to event', 1)
+        # add_event_to_calendar(
+        #   'Please take a photo of the event today \
+        #    and post on social media', 0)
         # https://docs.python.org/3/library/asyncio.html
-        print("You will now have been shared a spreadsheet to plan the Musician Event.\n")
+        print("You will now have been shared a spreadsheet\
+            to plan the Musician Event.\n")
         await asyncio.sleep(3)
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        print("You also will have reminders in your Calendar\
+            on what you need to do going forward.\n")
         await asyncio.sleep(3)
         print("Please ensure you do the following as soon as possible:\n")
         await asyncio.sleep(3)
@@ -357,35 +358,53 @@ async def main():
         await asyncio.sleep(3)
         print("* Add it as an option to the booking form.\n")
         await asyncio.sleep(3)
-        print("* Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n")
+        print("* Create a zap to link the Musician Sign Up form \
+              to the Attendees worksheet.\n")
         await asyncio.sleep(3)
-        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+        print("* Ensure you initial and date these tasks are \
+              complete using the Task Planner Worksheet.\n")
         await asyncio.sleep(3)
-        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+        print("We hope this helps with your planning. Please \
+              refresh the page to plan another event.\n")
 
-    elif event_type == "Open Day":
+    elif EVENT_TYPE == "Open Day":
         # create_worksheet('Task Planner', tasks_data, 'D')
         # create_worksheet('Attendees', attendees_data, 'D')
         # create_worksheet('Stock Take', stock_data, 'D')
-    #     add_event_to_calendar('Please remember to check the stock (enter into Stock worksheet), order staff badges and update the social headers.', 60)
-    #     add_event_to_calendar('Please remember to add post to social media, boost if required and prepare artwork for next Open Day', 30)
-    #     add_event_to_calendar('Please remember to post reminder on social media', 7)
-    #     add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
-    #     add_event_to_calendar('Please remember to remove option from form', 0)
-        print("You will now have been shared a spreadsheet to plan the Open Day.\n")
+        # add_event_to_calendar('Please remember to check the \
+        #                        stock (enter into Stock worksheet), \
+        #                        order staff badges and update the \
+        #                        social headers.', 60)
+        # add_event_to_calendar('Please remember to add post to \
+        #                        social media, boost if required and \
+        #                        prepare artwork for next Open Day', 30)
+        # add_event_to_calendar('Please remember to post reminder on \
+        #                        social media', 7)
+        # add_event_to_calendar('Please remember to post photo of \
+        #                        gift bags on social media and \
+        #                        update social headers to next event', 1)
+        # add_event_to_calendar('Please remember to remove the option \
+        #                        from the form', 0)
+        print("You will now have been shared a spreadsheet \
+               to plan the Open Day.\n")
         await asyncio.sleep(3)
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        print("You also will have reminders in your Calendar on \
+               what you need to do going forward.\n")
         await asyncio.sleep(3)
-        print("Please ensure you do the following as soon as possible:\n")
+        print("Please ensure you do the following \
+               as soon as possible:\n")
         await asyncio.sleep(3)
         print("* Add it as an event to the website and Facebook. \n")
         await asyncio.sleep(3)
         print("* Add it as an option to the booking form.\n")
         await asyncio.sleep(3)
-        print("* Create a zap to link the Open Day Signup form to the Attendees worksheet.\n")
+        print("* Create a zap to link the Open Day Signup form \
+               to the Attendees worksheet.\n")
         await asyncio.sleep(3)
-        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+        print("* Ensure you initial and date these tasks are complete \
+               using the Task Planner Worksheet.\n")
         await asyncio.sleep(3)
-        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+        print("We hope this helps with your planning. \
+               Please refresh the page to plan another event.\n")
 
 asyncio.run(main())
