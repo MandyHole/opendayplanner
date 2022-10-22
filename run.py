@@ -149,10 +149,10 @@ def get_date_to_check():
     Reformats date into a format with Day and Month spelled out
     Prints date to user to check to ensure it is correct.
     """
-    global date_of_event
-    date_of_event = get_event_date()
+    global DATE_OF_EVENT
+    DATE_OF_EVENT = get_event_date()
     format_ddmmyyyy = "%d/%m/%Y"
-    formatted_date = datetime.strptime(date_of_event, format_ddmmyyyy)
+    formatted_date = datetime.strptime(DATE_OF_EVENT, format_ddmmyyyy)
     # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
     formatted_date_no_time = datetime.date(formatted_date)
     # https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday
@@ -168,10 +168,10 @@ def confirm_date():
     """
     get_date_to_check()
     while True:
-        checkDate = input("Is this date correct (Y/N)? \n")
-        if check_date_validation(checkDate):
+        check_date = input("Is this date correct (Y/N)? \n")
+        if check_date_validation(check_date):
             break
-    if checkDate == "N":
+    if check_date == "N":
         confirm_date()
 
 
@@ -200,15 +200,15 @@ def get_email():
     print("\n")
     print("Your email address enables access to a spreadsheet and reminders")
     while True:
-        global entered_email
-        entered_email = input("What is your email address?  ")
+        global ENTERED_EMAIL
+        ENTERED_EMAIL = input("What is your email address?  ")
         print("\n")
-        if validate_email(entered_email):
+        if validate_email(ENTERED_EMAIL):
             break
     print("Thank you for providing a valid email address.")
     print("We can share the Google spreadsheet and reminders with you.\n")
     print("Please be patient as the spreadsheet is created...\n")
-    return entered_email
+    return ENTERED_EMAIL
 
 
 def validate_email(s):
@@ -230,9 +230,9 @@ def create_spreadsheet():
     Creates a spreadsheet that is shared with user's email.
     Spreadsheet is titled with the event type and date.
     """
-    global spreadsheet
-    spreadsheet = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {date_of_event}')
-    spreadsheet.share(f'{entered_email}', perm_type='user', role='writer')
+    global SPREADSHEET
+    SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
+    SPREADSHEET.share(f'{ENTERED_EMAIL}', perm_type='user', role='writer')
 
 
 def create_worksheet(sheet_name, sheet_data, final_column):
@@ -243,7 +243,7 @@ def create_worksheet(sheet_name, sheet_data, final_column):
     """
     # test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
     #  change above to this once done testing to create new spreadsheet)
-    new_worksheet = spreadsheet.add_worksheet(title=sheet_name,
+    new_worksheet = SPREADSHEET.add_worksheet(title=sheet_name,
                                               rows=100, cols=20)
     # https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
     new_worksheet.clear()
@@ -270,7 +270,7 @@ def calculate_reminder(x):
     Ensures event doesn't occur on a weekend.
     """
     format_ddmmyyyy = "%d/%m/%Y"
-    formatted_final_event_date = datetime.strptime(date_of_event,
+    formatted_final_event_date = datetime.strptime(DATE_OF_EVENT,
                                                    format_ddmmyyyy)
     reminder = formatted_final_event_date - timedelta(days=x)
     date_today = datetime.now()
@@ -294,9 +294,9 @@ def add_event_to_calendar(description, day):
     Date of reminder is in relation to date of event.
     """
     event = {
-        'summary': f'{EVENT_TYPE}: {date_of_event} Tasks to Complete',
+        'summary': f'{EVENT_TYPE}: {DATE_OF_EVENT} Tasks to Complete',
         'description': f'It is about {day} days until the event. Open the \
-            {EVENT_TYPE}: {date_of_event} spreadsheet. {description} \
+            {EVENT_TYPE}: {DATE_OF_EVENT} spreadsheet. {description} \
                 Complete the Task Planner Spreadsheet.',
         'start': {
             'dateTime': calculate_reminder(day),
@@ -307,7 +307,7 @@ def add_event_to_calendar(description, day):
             'timeZone': 'Europe/London',
         },
         'attendees': [
-            {'email': entered_email},
+            {'email': ENTERED_EMAIL},
         ],
         'reminders': {
             'useDefault': False,
@@ -337,6 +337,8 @@ async def main():
         # create_worksheet('Task Planner', musician_tasks_data, 'D')
         # create_worksheet('Attendees', attendees_data, 'D')
         # create_worksheet('Stock Take', stock_data, 'D')
+        # sheet_one = SPREADSHEET.get_worksheet(0)
+        # SPREADSHEET.del_worksheet(sheet_one)
         # add_event_to_calendar('Contact Music Department \
         #   and see if any boosting is required', 30)
         # add_event_to_calendar('Remove option from form', 7)
@@ -371,6 +373,8 @@ async def main():
         # create_worksheet('Task Planner', tasks_data, 'D')
         # create_worksheet('Attendees', attendees_data, 'D')
         # create_worksheet('Stock Take', stock_data, 'D')
+        # sheet_one = SPREADSHEET.get_worksheet(0)
+        # SPREADSHEET.del_worksheet(sheet_one)
         # add_event_to_calendar('Please remember to check the \
         #                        stock (enter into Stock worksheet), \
         #                        order staff badges and update the \
