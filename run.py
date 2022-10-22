@@ -217,7 +217,7 @@ def validate_email(s):
     Prints a statement if incorrect format.
     """
     # https://www.tutorialspoint.com/python-program-to-validate-email-address
-    pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+    pat = r"^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
     if re.match(pat, s):
         return True
     else:
@@ -349,10 +349,10 @@ async def main():
         #    and post on social media', 0)
         # https://docs.python.org/3/library/asyncio.html
         print("You will now have been shared a spreadsheet\
-            to plan the Musician Event.\n")
+              to plan the Musician Event.\n")
         await asyncio.sleep(3)
         print("You also will have reminders in your Calendar\
-            on what you need to do going forward.\n")
+              on what you need to do going forward.\n")
         await asyncio.sleep(3)
         print("Please ensure you do the following as soon as possible:\n")
         await asyncio.sleep(3)
