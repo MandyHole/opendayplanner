@@ -289,12 +289,15 @@ def staff_badge_needed():
     Enables user to specify if a staff badge is needed
     Loops until no more badges are required
     """
-    staff_badge_data()
     while True:
-        badge_required = input("Do you need to order another staff badge (Y/N)? \n")
+        badge_required = input("Do you need to order a new staff badge (Y/N)? \n")
         if check_date_validation(badge_required):
             break
     if badge_required == "Y":
+        staff_badge_data()
+        print("\n")
+        print("The info provided has been added to the Badges Worksheet.\n")
+        print("Please provide the info for another staff badge if required. \n")
         staff_badge_needed()
         
 
@@ -379,7 +382,7 @@ async def main():
     get_event_type()
     confirm_date()
     get_email()
-    # create_spreadsheet()
+    create_spreadsheet()
     if EVENT_TYPE == "Musician":
         # create_worksheet('Task Planner', musician_tasks_data, 'D')
         # create_worksheet('Attendees', attendees_data, 'D')
@@ -417,14 +420,14 @@ async def main():
               refresh the page to plan another event.\n")
 
     elif EVENT_TYPE == "Open Day":
-        # create_worksheet('Task Planner', tasks_data, 'D')
-        # create_worksheet('Attendees', attendees_data, 'D')
-        # create_worksheet('Stock Take', stock_data, 'D')
-        global
-        BADGES_WORKSHEET
-        # BADGES_WORKSHEET = create_worksheet('Badges', badges_data, 'D')
-        # sheet_one = SPREADSHEET.get_worksheet(0)
-        # SPREADSHEET.del_worksheet(sheet_one)
+        create_worksheet('Task Planner', tasks_data, 'D')
+        create_worksheet('Attendees', attendees_data, 'D')
+        create_worksheet('Stock Take', stock_data, 'D')
+        global BADGES_WORKSHEET
+        BADGES_WORKSHEET = create_worksheet('Badges', badges_data, 'D')
+        staff_badge_needed()
+        sheet_one = SPREADSHEET.get_worksheet(0)
+        SPREADSHEET.del_worksheet(sheet_one)
 
         # add_event_to_calendar('Please remember to check the \
         #                        stock (enter into Stock worksheet), \
@@ -462,8 +465,7 @@ async def main():
         print("We hope this helps with your planning. \
                Please refresh the page to plan another event.\n")
 
-# asyncio.run(main())
+asyncio.run(main())
 
 
 
-staff_badge_needed()
