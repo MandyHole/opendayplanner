@@ -69,6 +69,14 @@ musician_tasks_data = pd.DataFrame({
     "Notes": ['', '', '', '', '']
 })
 
+badges_data = pd.DataFrame({
+    "Title": [''],
+    "First Name": [''],
+    "Surname": [''],
+    "Job Title": [''],
+})
+
+
 print("Welcome to the Open Day Planner.")
 print("I hope it helps to make the event run seamlessly!\n")
 
@@ -263,6 +271,45 @@ def create_worksheet(sheet_name, sheet_data, final_column):
 # https://docs.gspread.org/en/latest/user-guide.html
 
 
+def staff_badge_data():
+    """
+    Gets input from users requesting data required for staff badge.
+    Appends Information to Badges worksheet using NewStaff Class
+    """
+    staff_title = input("What is their title? (eg, Mr, Mrs, Dr)\n")
+    staff_first_name = input ("What is their first name?\n")
+    staff_surname = input ("What is their surname?\n")
+    staff_role = input("What is their job title?\n")
+    new_staff_member = NewStaff(staff_title, staff_first_name, staff_surname, staff_role)
+    new_staff_member.add_to_worksheet()
+
+
+def staff_badge_needed():
+    """
+    Enables user to specify if a staff badge is needed
+    Loops until no more badges are required
+    """
+    staff_badge_data()
+    while True:
+        badge_required = input("Do you need to order another staff badge (Y/N)? \n")
+        if check_date_validation(badge_required):
+            break
+    if badge_required == "Y":
+        staff_badge_needed()
+        
+
+class NewStaff:
+    """Adds NewStaff data to Badges worksheet"""
+    def __init__(self, title, first_name, surname, role):
+        self.title = title
+        self.first_name = first_name
+        self.surname = surname
+        self.role = role
+
+    def add_to_worksheet(self):
+        BADGES_WORKSHEET.append_row([self.title, self.first_name, self.surname, self.role])
+
+
 def calculate_reminder(x):
     """
     Adjusts the calendar reminder dates.
@@ -373,8 +420,12 @@ async def main():
         # create_worksheet('Task Planner', tasks_data, 'D')
         # create_worksheet('Attendees', attendees_data, 'D')
         # create_worksheet('Stock Take', stock_data, 'D')
+        global
+        BADGES_WORKSHEET
+        # BADGES_WORKSHEET = create_worksheet('Badges', badges_data, 'D')
         # sheet_one = SPREADSHEET.get_worksheet(0)
         # SPREADSHEET.del_worksheet(sheet_one)
+
         # add_event_to_calendar('Please remember to check the \
         #                        stock (enter into Stock worksheet), \
         #                        order staff badges and update the \
@@ -411,4 +462,8 @@ async def main():
         print("We hope this helps with your planning. \
                Please refresh the page to plan another event.\n")
 
-asyncio.run(main())
+# asyncio.run(main())
+
+
+
+staff_badge_needed()
