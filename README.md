@@ -68,11 +68,15 @@ Validator Testing
 
 
 ## Deployment
-The site was deployed to GitHub pages. The steps to deploy are as follows:
-In the GitHub repository, navigate to the Settings tab
-From the source section drop-down menu, select the Master Branch
-Once the master branch has been selected, the page will be automatically refreshed with a detailed ribbon display to indicate the successful deployment.
-The live link can be found here - https://mandyhole.github.io/love-a-lab/
+The site was deployed to Heroku. GitHub pages. The steps to deploy are as follows:
+<ol>
+<li>Create a new app in Herouk</li>
+<li>Add Config Vars for creds.json, credentials.json and Port 8000 </li>
+<li>Add Buildpacks for python and nodejs (in that order)</li>
+<li>Deploy by connecting to the Github repository</li>
+<li>Set up automatic deploys</li>
+</ol>
+The live link can be found here <a href="https://open-day-planner.herokuapp.com/" target="new" aria-label="Open Day Planner in Heroku (opens in new window)">https://open-day-planner.herokuapp.com/</a>
 
 
 ## Credits
