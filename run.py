@@ -225,6 +225,7 @@ def validate_email(s):
     Prints a statement if incorrect format.
     """
     # https://www.tutorialspoint.com/python-program-to-validate-email-address
+    # https://www.includehelp.com/python/ignoring-escape-sequences-in-the-string.aspx#:~:text=To%20ignoring%20escape%20sequences%20in,%22r%22%20before%20the%20string.
     pat = r"^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
     if re.match(pat, s):
         return True
@@ -369,7 +370,7 @@ def add_event_to_calendar(description, day):
         'transparency': 'transparent',
 
     }
-    event = service.events().insert(calendarId='primary', body=event).execute()
+    event = service.events().insert(calendarId='mandyhole17test', body=event).execute()
 
 
 async def main():
