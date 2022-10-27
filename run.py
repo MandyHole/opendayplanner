@@ -88,7 +88,7 @@ def get_event_type():
     """
     while True:
         global EVENT_TYPE
-        EVENT_TYPE = input("Type of event: ")
+        EVENT_TYPE = input("Type of event:\n")
         if validate_event_type(EVENT_TYPE):
             break
     return EVENT_TYPE
@@ -120,7 +120,7 @@ def get_event_date():
     print("Please provide the date of the event.")
     print("Use the format dd/mm/yyyy) \n")
     while True:
-        event_date = input("Event date: ")
+        event_date = input("Event date: \n")
         if validate_event_date(event_date):
             break
     print("\n")
@@ -209,7 +209,7 @@ def get_email():
     print("Your email address enables access to a spreadsheet and reminders")
     while True:
         global ENTERED_EMAIL
-        ENTERED_EMAIL = input("What is your email address?  ")
+        ENTERED_EMAIL = input("What is your email address?\n")
         print("\n")
         if validate_email(ENTERED_EMAIL):
             break
