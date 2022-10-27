@@ -136,7 +136,7 @@ def validate_event_date(date_values):
     """
     # https://theprogrammingexpert.com/check-if-string-is-date-in-python/#:~:text=To%20check%20if%20a%20string,string%20and%20a%20date%20format.&text=When%20working%20with%20strings%20in,date%20can%20be%20very%20useful.
     # https://theprogrammingexpert.com/python-remove-time-from-datetime/#:~:text=To%20remove%20the%20time%20from,a%20date%20using%20date().&text=You%20can%20also%20use%20strftime,datetime%20object%20without%20the%20time.
-    # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date    
+    # https://stackoverflow.com/questions/7239315/cant-compare-datetime-datetime-to-datetime-date
     format_ddmmyyyy = "%d/%m/%Y"
     date_today = datetime.now()
     try:
@@ -278,10 +278,11 @@ def staff_badge_data():
     Appends Information to Badges worksheet using NewStaff Class
     """
     staff_title = input("What is their title? (eg, Mr, Mrs, Dr)\n")
-    staff_first_name = input ("What is their first name?\n")
-    staff_surname = input ("What is their surname?\n")
+    staff_first_name = input("What is their first name?\n")
+    staff_surname = input("What is their surname?\n")
     staff_role = input("What is their job title?\n")
-    new_staff_member = NewStaff(staff_title, staff_first_name, staff_surname, staff_role)
+    new_staff_member = NewStaff(staff_title,
+                                staff_first_name, staff_surname, staff_role)
     new_staff_member.add_to_worksheet()
 
 
@@ -291,14 +292,15 @@ def staff_badge_needed():
     Loops until no more badges are required
     """
     while True:
-        badge_required = input("Do you need to order a new staff badge (Y/N)? \n")
+        badge_required = input(
+            "Do you need to order a new staff badge (Y/N)? \n")
         if check_date_validation(badge_required):
             break
     if badge_required == "Y":
         staff_badge_data()
         print("\n")
         print("The info provided has been added to the Badges Worksheet.\n")
-        print("Please provide the info for another staff badge if required. \n")
+        print("Please provide the info for another staff badge if required.\n")
         staff_badge_needed()
 
 
@@ -311,7 +313,8 @@ class NewStaff:
         self.role = role
 
     def add_to_worksheet(self):
-        BADGES_WORKSHEET.append_row([self.title, self.first_name, self.surname, self.role])
+        BADGES_WORKSHEET.append_row(
+            [self.title, self.first_name, self.surname, self.role])
 
 
 def calculate_reminder(x):
@@ -369,7 +372,8 @@ def add_event_to_calendar(description, day):
         },
         'transparency': 'transparent',
     }
-    event = service.events().insert(calendarId='mandyhole17test', body=event).execute()
+    event = service.events().insert(
+        calendarId='mandyhole17test', body=event).execute()
 
 
 async def main():
@@ -389,14 +393,19 @@ async def main():
         create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
-        # add_event_to_calendar('Contact Music Department and see if any boosting is required', 30)
-        # add_event_to_calendar('Remove option from form', 7)
-        # add_event_to_calendar('Post on social to saying looking forward to event', 1)
-        # add_event_to_calendar('Please take a photo of the event today and post on social media', 0)
+        add_event_to_calendar(
+            'Contact Music Department and see if any boosting is required', 30)
+        add_event_to_calendar('Remove option from form', 7)
+        add_event_to_calendar(
+            'Post on social to saying looking forward to event', 1)
+        add_event_to_calendar(
+            'Please take a photo of the event today and post on social media',
+            0)
         # https://docs.python.org/3/library/asyncio.html
-        print("You will now have been shared a spreadsheet to plan the Musician Event.\n")
+        print(
+            "You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(3)
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        print("You also will have task reminders in your Calendar")
         await asyncio.sleep(3)
         print("Please ensure you do the following as soon as possible:\n")
         await asyncio.sleep(3)
@@ -404,11 +413,13 @@ async def main():
         await asyncio.sleep(3)
         print("* Add it as an option to the booking form.\n")
         await asyncio.sleep(3)
-        print("* Create a zap to link the Musician Sign Up form to the Attendees worksheet.\n")
+        print("* Create a zap to link form to the Attendees worksheet.\n")
         await asyncio.sleep(3)
-        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+        print("* Ensure you initial and date these tasks are complete.\n")
         await asyncio.sleep(3)
-        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+        print("We hope this helps with your planning.\n")
+        await asyncio.sleep(3)
+        print("Please refresh the page to plan another event.\n")
     elif EVENT_TYPE == "Open Day":
         create_worksheet('Task Planner', tasks_data, 'D')
         create_worksheet('Attendees', attendees_data, 'D')
@@ -418,28 +429,31 @@ async def main():
         staff_badge_needed()
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
-        # add_event_to_calendar('Please remember to check the stock (enter into Stock worksheet), order staff badges and update the social headers.', 60)
-        # add_event_to_calendar('Please remember to add post to social media, boost if required and prepare artwork for next Open Day', 30)
-        # add_event_to_calendar('Please remember to post reminder on social media', 7)
-        # add_event_to_calendar('Please remember to post photo of gift bags on social media and update social headers to next event', 1)
-        # add_event_to_calendar('Please remember to remove the option from the form', 0)
-        print("You will now have been shared a spreadsheet to plan the Open Day.\n")
+        add_event_to_calendar('Please remember to check the stock \
+            (enter into Stock worksheet), order staff badges and \
+            update the social headers.', 60)
+        add_event_to_calendar('Please remember to add post to social media, \
+            boost if required and prepare artwork for next Open Day', 30)
+        add_event_to_calendar('Please post reminder on social media', 7)
+        add_event_to_calendar('Please remember to post photo of gift bags on \
+            social media and update social headers to next event', 1)
+        add_event_to_calendar('Please remove the option from the form', 0)
+        print("You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(3)
-        print("You also will have reminders in your Calendar on what you need to do going forward.\n")
+        print("You also will have reminders in your Calendar.\n")
         await asyncio.sleep(3)
-        print("Please ensure you do the following as soon as possible:\n")
+        print("Please ensure you do the following asap:\n")
         await asyncio.sleep(3)
         print("* Add it as an event to the website and Facebook. \n")
         await asyncio.sleep(3)
         print("* Add it as an option to the booking form.\n")
         await asyncio.sleep(3)
-        print("* Create a zap to link the Open Day Signup form to the Attendees worksheet.\n")
+        print("* Create a zap to link the form to the worksheet.\n")
         await asyncio.sleep(3)
-        print("* Ensure you initial and date these tasks are complete using the Task Planner Worksheet.\n")
+        print("* Initial/date these tasks are complete on the Worksheet.\n")
         await asyncio.sleep(3)
-        print("We hope this helps with your planning. Please refresh the page to plan another event.\n")
+        print("We hope this helps with your planning.\n")
+        await asyncio.sleep(3)
+        print("Please refresh the page to plan another event.\n")
 
 asyncio.run(main())
-
-
-
