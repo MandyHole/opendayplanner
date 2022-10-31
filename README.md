@@ -1,41 +1,8 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
-
-Welcome MandyHole,
-
-This is the Code Institute student template for deploying your third portfolio project, the Python command-line project. The last update to this file was: **August 17, 2021**
-
-## Reminders
-
-* Your code must be placed in the `run.py` file
-* Your dependencies must be placed in the `requirements.txt` file
-* Do not edit any of the other files or your code may not deploy properly
-
-## Creating the Heroku app
-
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
-
-1. `heroku/python`
-2. `heroku/nodejs`
-
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
-
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
-
-Connect your GitHub repository and deploy as normal.
-
-## Constraints
-
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
-
------
-Happy coding!
-
-
 # Open Day Planner
 
 ## Overview
 
-This site is designed specifically to help my colleagues and me to save time and be more efficient when implementing the marketing plan of certain events we offer through our work. Adding the type and date of the event will result in a Google spreadsheet for the event (containing a Tasks planner and other worksheets to update) as well as a series of calendar reminders that get entered in at a date relative to the date of the event itself. Whilst the main content is overall designed to add efficiency to my work, for the purpose of this project a few modications were made to 1 maintain anonymity 2 make the project more complex (adding staff name badges and the option of choosing different types of events) and 3 not have calendar entries and spreadsheets added by external site users to our actual email accounts (for example, instead of adding attendees from my work, the user needs to enter their email address instead, and the calendar creation is done through a test email I created for this purpose).
+This site is designed specifically to help my colleagues and me to save time and be more efficient when implementing the marketing plan of certain events we offer through our work. Adding the type and date of the event will result in a Google spreadsheet for the event (containing a Tasks planner and other worksheets to update) as well as a series of calendar reminders that get entered in at a date relative to the date of the event itself. Whilst we sometimes forget to do the odd task, we don't have the time to manually add in a long series of reminders either; this programme addresses these issues. Whilst the main content is overall designed to add efficiency to my work, for the purpose of this project a few modications were made to 1 maintain anonymity 2 make the project more complex (adding staff name badges and the option of choosing different types of events) and 3 not have calendar entries and spreadsheets added by external site users to our actual email accounts (for example, instead of adding attendees from my work, the user needs to enter their email address instead, and the calendar creation is done through a test email I created for this purpose).
 
 Should someone else want to use it to plan their event, they could use the basic framework and make modifications to the types of events allowed, panda dataframes, and calendar descriptions/timeframes to create their own useful planning system.
 
@@ -48,11 +15,22 @@ Should someone else want to use it to plan their event, they could use the basic
 
 <strong>Type of event verification:</strong> The programme checks the user input either "Musician" or "Open Day"
 
+<img src="assets/readme-images/event-validation.png" alt="examples of type of event validation" width="50%">
+
 <strong>Date verification:</strong> The programme checks the user input a date using dd/mm/yyyy format and that the date is in the future. It then returns the date in a user-friendly format so the user can verify that the date is correct. If not, they are asked to input the correct date.
+
+<img src="assets/readme-images/event-date-validation.png" alt="example of event date validation" width="50%">
+<img src="assets/readme-images/check-event-date-validation.png" alt="example of event date validation with user friendly date" width="50%">
+<img src="assets/readme-images/yes-no-validation-example.png" alt="example of event date validation (Y/N)" width="50%">
 
 <strong>Email verification:</strong> The programme checks the user input a valid email address.
 
+<img src="assets/readme-images/email-validation-one.png" alt="example of email validation" width="50%">
+<img src="assets/readme-images/email-validation-two.png" alt="example of email validation" width="50%">
+
 <strong>Spreadsheet creation:</strong> A Google spreadsheet is created to help plan the event based on the type of event the user input using the Panda dataframes for data.
+
+<img src="assets/readme-images/spreadsheet-example.png" alt="examples of the created spreadsheets">
 
 <strong>Name badges:</strong> The programme allows the user to add the information of any new staff who need badges into the system with the information populated as a new row in the Badges worksheet (Open Day event only).
 
@@ -63,14 +41,22 @@ Should someone else want to use it to plan their event, they could use the basic
 
 ## Testing
 
-Validator Testing
-<strong>pycodestyle (formerly called pep8)</strong>: No errors were returned when passing through the pycodestyle validator
+At each stage, I tested to ensure that each validation produced the expected result (e.g., intentionally adding dates in the past, wrong type of event, wrong email format, etc), either looping to ask the user for a correct input with the appropriate error or progressing the user through the programme if the input was correct. 
+
+I checked to ensure the spreadsheets were in a clear, usable format with the cells labeled as expected and headers formatted.
+
+I also went through the 'Problems' section of the console and the pycodestyle to ensure there were no errors. I found that it didn't like the \ character in the email validation. A search found that adding an 'r' before the string made the program ignore that character and pass the test. The 80 character line length also caused problems until a search found that an '\' at the end of the line would split the lines and make them still work.
+
+
+
+### Validator Testing
+<strong>pycodestyle (formerly called pep8)</strong>: No errors were returned when passing through the pycodestyle validator once the line spacing and escape character issues were resolved.
 
 
 ## Deployment
-The site was deployed to Heroku. GitHub pages. The steps to deploy are as follows:
+The site was deployed to Heroku. The steps to deploy are as follows:
 <ol>
-<li>Create a new app in Herouk</li>
+<li>Create a new app in Heroku</li>
 <li>Add Config Vars for creds.json, credentials.json and Port 8000 </li>
 <li>Add Buildpacks for python and nodejs (in that order)</li>
 <li>Deploy by connecting to the Github repository</li>
@@ -113,13 +99,20 @@ The live link can be found here <a href="https://open-day-planner.herokuapp.com/
 <ul><li><a href="https://developers.google.com/calendar/api/v3/reference/events/insert" aria-label="Google Developers Website (opens in a new window)" target="new">Google Developers Website: inserting events</a></li>
 
 <li><a href="https://developers.google.com/workspace/guides/configure-oauth-consent" aria-label="Google Developers Website (opens in a new window)" target="new">Google Developers Website: Oauth Consent</a></li>
-
 </ul>
 
 ### Working with Asyncio
 <ul><li><a href="https://docs.python.org/3/library/asyncio.html" aria-label="Python.org Website (opens in a new window)" target="new">Python.org: asyncio</a></li></ul>
 
+## Python Libraries Used
 
-
+<ul><li><strong>datetime, date, timedelta: </strong>Enables users to check an input was a valid date, find the date/time now, add/subtract units of time from a date</li>
+<li><strong>re: </strong>Enables the program to check whether a string was a valid email address</li>
+<li><strong>asyncio: </strong>Enables the programme to add a pause inbetween print statements</li>
+<li><strong>gspread: </strong>Enables the programme to link to Google Sheets</li>
+<li><strong>google.oauth2.service_account import Credentials: </strong> Enables the programme to link to Google Calendar</li>
+<li><strong>pandas as pd: </strong> Enables the creation of dataframes</li>
+<li><strong>from gspread_dataframe import set_with_dataframe: </strong>Enables user to add panda dataframes to the Google Sheet</li>
+<li><strong>from gspread_formatting import *: </strong>Enables users to specify formatting for their Google Sheets within Python</li></ul>
 
 

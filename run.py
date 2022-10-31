@@ -177,13 +177,13 @@ def confirm_date():
     get_date_to_check()
     while True:
         check_date = input("Is this date correct (Y/N)? \n")
-        if check_date_validation(check_date):
+        if check_y_n(check_date):
             break
     if check_date == "N":
         confirm_date()
 
 
-def check_date_validation(check_value):
+def check_y_n(check_value):
     """
     Checks user input Y or N to confirm date.
     Produces value error if not.
@@ -240,7 +240,8 @@ def create_spreadsheet():
     Spreadsheet is titled with the event type and date.
     """
     global SPREADSHEET
-    SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
+    # SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
+    SPREADSHEET = GSPREAD_CLIENT.open('Open Day: 14/08/2020')
     SPREADSHEET.share(f'{ENTERED_EMAIL}', perm_type='user', role='writer')
 
 
@@ -275,16 +276,43 @@ def create_worksheet(sheet_name, sheet_data, final_column):
 def staff_badge_data():
     """
     Gets input from users requesting data required for staff badge.
+    Runs through validation to ensure a response was provided.
     Appends Information to Badges worksheet using NewStaff Class
     """
-    staff_title = input("What is their title? (eg, Mr, Mrs, Dr)\n")
-    staff_first_name = input("What is their first name?\n")
-    staff_surname = input("What is their surname?\n")
-    staff_role = input("What is their job title?\n")
+    staff_title = get_staff_data("What is their title?")
+    staff_first_name = get_staff_data("What is their first name?")
+    staff_surname = get_staff_data("What is their surname?")
+    staff_role = get_staff_data("What is their job title?")
     new_staff_member = NewStaff(staff_title,
                                 staff_first_name, staff_surname, staff_role)
     new_staff_member.add_to_worksheet()
 
+def get_staff_data(info_required):
+    """
+    Loops staff input until a response is provided.
+    Formats response to all caps
+    """
+    while True:
+        var_x = input(f"{info_required} \n")
+        if validate_staff(var_x):
+            var_final = var_x.upper()
+            break
+    return var_final
+
+def validate_staff(values):
+    """
+    Checks user input something into the staff input
+    Produces a value error if not and triggers loop to ask again.
+    """
+    try:
+        if values == "":
+            raise ValueError(
+                "You didn't add any text. Please include a valid response."
+            )
+    except ValueError as e:
+        print(f"{e}\n")
+        return False
+    return True
 
 def staff_badge_needed():
     """
@@ -294,7 +322,7 @@ def staff_badge_needed():
     while True:
         badge_required = input(
             "Do you need to order a new staff badge (Y/N)? \n")
-        if check_date_validation(badge_required):
+        if check_y_n(badge_required):
             break
     if badge_required == "Y":
         staff_badge_data()
