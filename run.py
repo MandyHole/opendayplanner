@@ -15,7 +15,7 @@ SCOPE = [
     "https://www.googleapis.com/auth/calendar"
     ]
 
-# From Love Sandwiches
+# From Love Sandwiches Project
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
@@ -240,8 +240,7 @@ def create_spreadsheet():
     Spreadsheet is titled with the event type and date.
     """
     global SPREADSHEET
-    # SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
-    SPREADSHEET = GSPREAD_CLIENT.open('Open Day: 14/08/2020')
+    SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
     SPREADSHEET.share(f'{ENTERED_EMAIL}', perm_type='user', role='writer')
 
 
@@ -251,8 +250,6 @@ def create_worksheet(sheet_name, sheet_data, final_column):
     Inputs dataframes for content.
     Adds formatting to header row.
     """
-    # test_spreadsheet=GSPREAD_CLIENT.open('Open Day: 14/08/2020')
-    #  change above to this once done testing to create new spreadsheet)
     new_worksheet = SPREADSHEET.add_worksheet(title=sheet_name,
                                               rows=100, cols=20)
     # https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-python-f62479460cf0
@@ -287,6 +284,7 @@ def staff_badge_data():
                                 staff_first_name, staff_surname, staff_role)
     new_staff_member.add_to_worksheet()
 
+
 def get_staff_data(info_required):
     """
     Loops staff input until a response is provided.
@@ -298,6 +296,7 @@ def get_staff_data(info_required):
             var_final = var_x.upper()
             break
     return var_final
+
 
 def validate_staff(values):
     """
@@ -313,6 +312,7 @@ def validate_staff(values):
         print(f"{e}\n")
         return False
     return True
+
 
 def staff_badge_needed():
     """
@@ -421,14 +421,15 @@ async def main():
         create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
-        add_event_to_calendar(
-            'Contact Music Department and see if any boosting is required', 30)
-        add_event_to_calendar('Remove option from form', 7)
-        add_event_to_calendar(
-            'Post on social to saying looking forward to event', 1)
-        add_event_to_calendar(
-            'Please take a photo of the event today and post on social media',
-            0)
+        # add_event_to_calendar(
+        #     'Contact Music Department and see if any boosting is required'
+        #     , 30)
+        # add_event_to_calendar('Remove option from form', 7)
+        # add_event_to_calendar(
+        #     'Post on social to saying looking forward to event', 1)
+        # add_event_to_calendar(
+        #     'Please take a photo of the event today and post on \
+        #     social media', 0)
         # https://docs.python.org/3/library/asyncio.html
         print(
             "You will now have been shared a planning spreadsheet.\n")
@@ -457,15 +458,16 @@ async def main():
         staff_badge_needed()
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
-        add_event_to_calendar('Please remember to check the stock \
-            (enter into Stock worksheet), order staff badges and \
-            update the social headers.', 60)
-        add_event_to_calendar('Please remember to add post to social media, \
-            boost if required and prepare artwork for next Open Day', 30)
-        add_event_to_calendar('Please post reminder on social media', 7)
-        add_event_to_calendar('Please remember to post photo of gift bags on \
-            social media and update social headers to next event', 1)
-        add_event_to_calendar('Please remove the option from the form', 0)
+        # add_event_to_calendar('Please remember to check the stock \
+        #     (enter into Stock worksheet), order staff badges and \
+        #     update the social headers.', 60)
+        # add_event_to_calendar('Please remember to add post to social media, \
+        #     boost if required and prepare artwork for next Open Day',
+        #     30)
+        # add_event_to_calendar('Please post reminder on social media', 7)
+        # add_event_to_calendar('Please remember to post photo of gift bags \
+        #     on social media and update social headers to next event', 1)
+        # add_event_to_calendar('Please remove the option from the form', 0)
         print("You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(3)
         print("You also will have reminders in your Calendar.\n")

@@ -4,7 +4,7 @@
 
 This site is designed specifically to help my colleagues and me to save time and be more efficient when implementing the marketing plan of certain events we offer through our work. Adding the type and date of the event will result in a Google spreadsheet for the event (containing a Tasks planner and other worksheets to update) as well as a series of calendar reminders that get entered in at a date relative to the date of the event itself. Whilst we sometimes forget to do the odd task, we don't have the time to manually add in a long series of reminders either; this programme addresses these issues. Whilst the main content is overall designed to add efficiency to my work, for the purpose of this project a few modications were made to 1 maintain anonymity 2 make the project more complex (adding staff name badges and the option of choosing different types of events) and 3 not have calendar entries and spreadsheets added by external site users to our actual email accounts (for example, instead of adding attendees from my work, the user needs to enter their email address instead, and the calendar creation is done through a test email I created for this purpose).
 
-Should someone else want to use it to plan their event, they could use the basic framework and make modifications to the types of events allowed, panda dataframes, and calendar descriptions/timeframes to create their own useful planning system.
+Should someone else want to use it to plan their event, they could use the basic framework by <a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo" target="new" aria-label="How to fork a repo - opens in a new window">making a fork for the github repository</a> and then using that to make modifications to the types of events allowed, panda dataframes, and calendar descriptions/timeframes to create their own useful planning system.
 
 ## Flowchart
 
@@ -32,7 +32,7 @@ Should someone else want to use it to plan their event, they could use the basic
 
 <img src="assets/readme-images/spreadsheet-example.png" alt="examples of the created spreadsheets">
 
-<strong>Name badges:</strong> The programme allows the user to add the information of any new staff who need badges into the system with the information populated as a new row in the Badges worksheet (Open Day event only).
+<strong>Name badges:</strong> The programme allows the user to add the information of any new staff who need badges into the system with the information populated formatted as all caps and added as a new row in the Badges worksheet (Open Day event only). It ensures that a response is given for each input.
 
 <strong>Calendar reminders:</strong> The programme automatically creates a series of reminders to help the user to remember what they have to do at a particular date in relation to the date of the event. The reminders cannot be in the past or fall on a weekend.
 
@@ -47,10 +47,10 @@ I checked to ensure the spreadsheets were in a clear, usable format with the cel
 
 I also went through the 'Problems' section of the console and the pycodestyle to ensure there were no errors. I found that it didn't like the \ character in the email validation. A search found that adding an 'r' before the string made the program ignore that character and pass the test. The 80 character line length also caused problems until a search found that an '\' at the end of the line would split the lines and make them still work.
 
-
+I also checked for user experience. In particular, I noticed that the programme seemed to be paused when the spreadsheet was being created as it took some time to generate. I therefore added the print message "Please be patient as the spreadsheet is created...". I also noticed that the multiple print statements at the end came out too fast and could be easily missed so I added a pause between statements using asyncio.
 
 ### Validator Testing
-<strong>pycodestyle (formerly called pep8)</strong>: No errors were returned when passing through the pycodestyle validator once the line spacing and escape character issues were resolved.
+<strong>pycodestyle (formerly called pep8)</strong>: No errors were returned when passing through the pycodestyle validator once the line length, trailing whitespaces, double space above functions and escape character issues were resolved. I ran this by running "pip install pycodestyle" in the terminal and then "pycodestyle --first run.py"
 
 
 ## Deployment
@@ -114,5 +114,3 @@ The live link can be found here <a href="https://open-day-planner.herokuapp.com/
 <li><strong>pandas as pd: </strong> Enables the creation of dataframes</li>
 <li><strong>from gspread_dataframe import set_with_dataframe: </strong>Enables user to add panda dataframes to the Google Sheet</li>
 <li><strong>from gspread_formatting import *: </strong>Enables users to specify formatting for their Google Sheets within Python</li></ul>
-
-
