@@ -52,9 +52,9 @@ tasks_data = pd.DataFrame({
             'Remove Option From Form',
             'Remove Social Header'
             ],
-    "Due Date": ['', '', '', '', '', '', '', '', 
+    "Due Date": ['', '', '', '', '', '', '', '',
                  '', '', '', '', ''],
-    "Date Completed": ['', '', '', '', '', '', 
+    "Date Completed": ['', '', '', '', '', '',
                        '', '', '', '', '', '', ''],
     "Contact Email": ['', '', '', '', '', '',
                       '', '', '', '', '', '', ''],
@@ -373,6 +373,7 @@ def calculate_reminder(x):
     gspread_reminder = reminder.strftime("%d/%m/%Y")
     return gspread_reminder
 
+
 def confirmation(message, spreadsheet_to_update, cell_range):
     """
     Enables user to say if they have done a task.
@@ -389,7 +390,8 @@ def confirmation(message, spreadsheet_to_update, cell_range):
         print("Once done, manually update the tracking spreadsheet.\n")
         print("\n")
     elif is_completed == "Y":
-        spreadsheet_to_update.update(f'{cell_range}', [[gspread_date, ENTERED_EMAIL]])
+        spreadsheet_to_update.update(f'{cell_range}',
+                                     [[gspread_date, ENTERED_EMAIL]])
         print("The task on the spreadsheet has been updated as complete. \n")
         print("\n")
 
@@ -443,7 +445,9 @@ async def main():
     create_spreadsheet()
     if EVENT_TYPE == "Musician":
         global musician_tasks
-        musician_tasks = create_worksheet('Task Planner', musician_tasks_data, 'E')
+        musician_tasks = create_worksheet('Task Planner',
+                                          musician_tasks_data,
+                                          'E')
         create_worksheet('Attendees', attendees_data, 'D')
         create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
@@ -451,7 +455,11 @@ async def main():
         today_date = datetime.now()
         global gspread_date
         gspread_date = today_date.strftime("%d/%m/%Y")
-        musician_tasks.update('B2:B6', [[gspread_date], [gspread_date], [gspread_date], [calculate_reminder(60)], [calculate_reminder(7)]])
+        musician_tasks.update('B2:B6', [[gspread_date],
+                                        [gspread_date],
+                                        [gspread_date],
+                                        [calculate_reminder(60)],
+                                        [calculate_reminder(7)]])
         # add_event_to_calendar(
         #     'Contact Music Department and see if any boosting is required'
         #     , 30)
@@ -467,9 +475,11 @@ async def main():
         await asyncio.sleep(1)
         # print("You also will have task reminders in your Calendar")
         await asyncio.sleep(3)
-        confirmation("Have you added this event to the website?", musician_tasks, 'C2:D2')
+        confirmation("Have you added this event to the website?",
+                     musician_tasks, 'C2:D2')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to the booking form?", musician_tasks, 'C3:D3')
+        confirmation("Have you added this event to the booking form?",
+                     musician_tasks, 'C3:D3')
         await asyncio.sleep(3)
     elif EVENT_TYPE == "Open Day":
         global task_worksheet
@@ -484,11 +494,16 @@ async def main():
         today_date = datetime.now()
         gspread_date = today_date.strftime("%d/%m/%Y")
         task_worksheet.update('B2:B14', [[gspread_date], [gspread_date],
-                       [gspread_date], [gspread_date], [calculate_reminder(60)],
-                       [calculate_reminder(60)], [calculate_reminder(60)],
-                       [calculate_reminder(30)], [calculate_reminder(30)],
-                       [calculate_reminder(30)], [calculate_reminder(7)],
-                       [calculate_reminder(1)], [calculate_reminder(0)]],)
+                                         [gspread_date], [gspread_date],
+                                         [calculate_reminder(60)],
+                                         [calculate_reminder(60)],
+                                         [calculate_reminder(60)],
+                                         [calculate_reminder(30)],
+                                         [calculate_reminder(30)],
+                                         [calculate_reminder(30)],
+                                         [calculate_reminder(7)],
+                                         [calculate_reminder(1)],
+                                         [calculate_reminder(0)]],)
         # add_event_to_calendar('Please remember to check the stock \
         #     (enter into Stock worksheet), order staff badges and \
         #     update the social headers.', 60)
@@ -501,11 +516,14 @@ async def main():
         # add_event_to_calendar('Please remove the option from the form', 0)
         print("You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(1)
-        confirmation("Have you added this event to the website?", task_worksheet, 'C2:D2')
+        confirmation("Have you added this event to the website?",
+                     task_worksheet, 'C2:D2')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to the booking form?", task_worksheet, 'C3:D3')
+        confirmation("Have you added this event to the booking form?",
+                     task_worksheet, 'C3:D3')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to Facebook?", task_worksheet, 'C5:D5')
+        confirmation("Have you added this event to Facebook?",
+                     task_worksheet, 'C5:D5')
         await asyncio.sleep(3)
     print("Please ensure you also do the following asap:\n")
     await asyncio.sleep(3)
