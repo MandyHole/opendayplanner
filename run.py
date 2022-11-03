@@ -51,9 +51,12 @@ tasks_data = pd.DataFrame({
             'Remove Option From Form',
             'Remove Social Header'
             ],
-    "Date Completed": ['', '', '', '', '', '', '', '', '', '', '', '', ''],
-    "Person Performing Task": ['', '', '', '', '', '',
-                               '', '', '', '', '', '', ''],
+    "Due Date": ['', '', '', '', '', '', '', '', 
+                 '', '', '', '', ''],
+    "Date Completed": ['', '', '', '', '', '', 
+                       '', '', '', '', '', '', ''],
+    "Contact Email": ['', '', '', '', '', '',
+                      '', '', '', '', '', '', ''],
     "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
 })
 
@@ -65,6 +68,7 @@ musician_tasks_data = pd.DataFrame({
             'Checked Stock',
             'Remove Option From Form',
             ],
+    "Due Date": ['', '', '', '', ''],
     "Date Completed": ['', '', '', '', ''],
     "Person Performing Task": ['', '', '', '', ''],
     "Notes": ['', '', '', '', '']
@@ -240,7 +244,8 @@ def create_spreadsheet():
     Spreadsheet is titled with the event type and date.
     """
     global SPREADSHEET
-    SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
+    # SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
+    SPREADSHEET = GSPREAD_CLIENT.open('Musician: 22/12/2023')
     SPREADSHEET.share(f'{ENTERED_EMAIL}', perm_type='user', role='writer')
 
 
@@ -366,42 +371,60 @@ def calculate_reminder(x):
         reminder = formatted_final_event_date - timedelta(days=(x+2))
         if reminder <= date_today:
             reminder = date_today
+    gspread_reminder = reminder.strftime("%d/%m/%Y")
+    return gspread_reminder
+
+def confirmation(spreadsheet_to_update, cell_range, task):
+    """
+    Enables user to confirm that the date provided is the correct date.
+    If not, loops back to ask for the date again.
+    """
+    while True:
+        is_completed = input("Have you done this yet? (Y/N)? \n")
+        if check_y_n(task):
+            break
+    if is_completed == "N":
+        print("Please ensure you do this as soon as possible:\n")
+        print("Once done, manually update the tracking spreadsheet")
+    elif is_completed == "Y":
+        spreadsheet_to_update.update(cell_range, datetime.now(), ENTERED_EMAIL)
+        print("The task on the spreadsheet has been updated as complete")
 
 
 # https://developers.google.com/calendar/api/v3/reference/events/insert
-def add_event_to_calendar(description, day):
-    """
-    Adds a reminder to the user's calendar using email provided.
-    Includes customised description with tasks needed.
-    Date of reminder is in relation to date of event.
-    """
-    event = {
-        'summary': f'{EVENT_TYPE}: {DATE_OF_EVENT} Tasks to Complete',
-        'description': f'It is about {day} days until the event. Open the \
-            {EVENT_TYPE}: {DATE_OF_EVENT} spreadsheet. {description} \
-                Complete the Task Planner Spreadsheet.',
-        'start': {
-            'dateTime': calculate_reminder(day),
-            'timeZone': 'Europe/London',
-        },
-        'end': {
-            'dateTime': calculate_reminder(day) + timedelta(hours=1),
-            'timeZone': 'Europe/London',
-        },
-        'attendees': [
-            {'email': ENTERED_EMAIL},
-        ],
-        'reminders': {
-            'useDefault': False,
-            'overrides': [
-                {'method': 'email', 'minutes': 0},
-                {'method': 'popup', 'minutes': 10},
-            ],
-        },
-        'transparency': 'transparent',
-    }
-    event = service.events().insert(
-        calendarId='mandyhole17test', body=event).execute()
+# def add_event_to_calendar(description, day):
+#     """
+#     Adds a reminder to the user's calendar using email provided.
+#     Includes customised description with tasks needed.
+#     Date of reminder is in relation to date of event.
+#     """
+#     event = {
+#         'summary': f'{EVENT_TYPE}: {DATE_OF_EVENT} Tasks to Complete',
+#         'description': f'It is about {day} days until the event. Open the \
+#             {EVENT_TYPE}: {DATE_OF_EVENT} spreadsheet. {description} \
+#                 Complete the Task Planner Spreadsheet.',
+#         'start': {
+#             'dateTime': calculate_reminder(day),
+#             'timeZone': 'Europe/London',
+#         },
+#         'end': {
+#             'dateTime': calculate_reminder(day) + timedelta(hours=1),
+#             'timeZone': 'Europe/London',
+#         },
+#         'attendees': [
+#             {'email': ENTERED_EMAIL},
+#         ],
+#         'reminders': {
+#             'useDefault': False,
+#             'overrides': [
+#                 {'method': 'email', 'minutes': 0},
+#                 {'method': 'popup', 'minutes': 10},
+#             ],
+#         },
+#         'transparency': 'transparent',
+#     }
+#     event = service.events().insert(
+#         calendarId='mandyhole17test', body=event).execute()
 
 
 async def main():
@@ -416,11 +439,21 @@ async def main():
     get_email()
     create_spreadsheet()
     if EVENT_TYPE == "Musician":
-        create_worksheet('Task Planner', musician_tasks_data, 'D')
-        create_worksheet('Attendees', attendees_data, 'D')
-        create_worksheet('Stock Take', stock_data, 'D')
+        global musician_tasks
+        musician_tasks = create_worksheet('Task Planner', musician_tasks_data, 'E')
+        # create_worksheet('Attendees', attendees_data, 'D')
+        # create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
+        today_date = datetime.now()
+        gspread_date = today_date.strftime("%d/%m/%Y")
+        sixty_reminder = calculate_reminder(60)
+        seven_reminder = calculate_reminder(7)
+        musician_tasks.update('B2:B6', [[gspread_date], [gspread_date], [gspread_date], [sixty_reminder], [seven_reminder]])
+        # musician_tasks.update('C2', sixty_reminder)    
+            # 'B2:B6', [today_date, today_date,
+            #            today_date, sixty_reminder,
+            #            seven_reminder])
         # add_event_to_calendar(
         #     'Contact Music Department and see if any boosting is required'
         #     , 30)
@@ -434,23 +467,28 @@ async def main():
         print(
             "You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(3)
-        print("You also will have task reminders in your Calendar")
-        await asyncio.sleep(3)
+        # print("You also will have task reminders in your Calendar")
+        # await asyncio.sleep(3)
         print("Please ensure you do the following as soon as possible:\n")
         await asyncio.sleep(3)
-        print("* Add it as an event to the website. \n")
-        await asyncio.sleep(3)
-        print("* Add it as an option to the booking form.\n")
-        await asyncio.sleep(3)
+        # web_event = input("Have you added it as an event to the website? Y/N")
+        # confirmation(musician_tasks, 'C2:D2', web_event)
+        # booking_form = input("Have you added it to the booking form? Y/N")
+        # confirmation(musician_tasks, 'C3:D3', booking_form)
+        # print("* Add it as an event to the website. \n")
+        # await asyncio.sleep(3)
+        # print("* Add it as an option to the booking form.\n")
+        # await asyncio.sleep(3)
         print("* Create a zap to link form to the Attendees worksheet.\n")
         await asyncio.sleep(3)
-        print("* Ensure you initial and date these tasks are complete.\n")
+        print("* Ensure you initial and date when this is complete.\n")
         await asyncio.sleep(3)
         print("We hope this helps with your planning.\n")
         await asyncio.sleep(3)
         print("Please refresh the page to plan another event.\n")
     elif EVENT_TYPE == "Open Day":
-        create_worksheet('Task Planner', tasks_data, 'D')
+        global task_worksheet
+        task_worksheet = create_worksheet('Task Planner', tasks_data, 'E')
         create_worksheet('Attendees', attendees_data, 'D')
         create_worksheet('Stock Take', stock_data, 'D')
         global BADGES_WORKSHEET
@@ -458,6 +496,12 @@ async def main():
         staff_badge_needed()
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
+        task_worksheet.update('B2:B14', datetime.now(), datetime.now(),
+                       datetime.now(), datetime.now(), calculate_reminder(60),
+                       calculate_reminder(60), calculate_reminder(60),
+                       calculate_reminder(30), calculate_reminder(30),
+                       calculate_reminder(30), calculate_reminder(7),
+                       calculate_reminder(1), calculate_reminder(0),)
         # add_event_to_calendar('Please remember to check the stock \
         #     (enter into Stock worksheet), order staff badges and \
         #     update the social headers.', 60)
