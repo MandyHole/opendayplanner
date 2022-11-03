@@ -26,7 +26,8 @@ stock_data = pd.DataFrame({
                       'Pencils', 'Notebooks', 'Water Bottles'],
     'Number Remaining': ['', '', '', '', '', ''],
     'Location of Stock': ['', '', '', '', '', ''],
-    'Date checked': ['', '', '', '', '', '']})
+    'Date checked': ['', '', '', '', '', '']
+    })
 
 attendees_data = pd.DataFrame({
     "Name of Child": [''],
@@ -80,7 +81,6 @@ badges_data = pd.DataFrame({
     "Surname": [''],
     "Job Title": [''],
 })
-
 
 print("Welcome to the Open Day Planner.")
 print("I hope it helps to make the event run seamlessly!\n")
@@ -244,8 +244,7 @@ def create_spreadsheet():
     Spreadsheet is titled with the event type and date.
     """
     global SPREADSHEET
-    # SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
-    SPREADSHEET = GSPREAD_CLIENT.open('Musician: 22/12/2023')
+    SPREADSHEET = GSPREAD_CLIENT.create(f'{EVENT_TYPE}: {DATE_OF_EVENT}')
     SPREADSHEET.share(f'{ENTERED_EMAIL}', perm_type='user', role='writer')
 
 
@@ -376,8 +375,10 @@ def calculate_reminder(x):
 
 def confirmation(message, spreadsheet_to_update, cell_range):
     """
-    Enables user to confirm that the date provided is the correct date.
-    If not, loops back to ask for the date again.
+    Enables user to say if they have done a task.
+    If the input is not Y or N, loops back to ask again.
+    If Y, updates spreadsheet and confirms with print statement.
+    If N, reminds them to do asap.
     """
     while True:
         is_completed = input(f"{message} Y/N \n")
@@ -443,16 +444,14 @@ async def main():
     if EVENT_TYPE == "Musician":
         global musician_tasks
         musician_tasks = create_worksheet('Task Planner', musician_tasks_data, 'E')
-        # create_worksheet('Attendees', attendees_data, 'D')
-        # create_worksheet('Stock Take', stock_data, 'D')
+        create_worksheet('Attendees', attendees_data, 'D')
+        create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
         today_date = datetime.now()
         global gspread_date
         gspread_date = today_date.strftime("%d/%m/%Y")
-        sixty_reminder = calculate_reminder(60)
-        seven_reminder = calculate_reminder(7)
-        musician_tasks.update('B2:B6', [[gspread_date], [gspread_date], [gspread_date], [sixty_reminder], [seven_reminder]])
+        musician_tasks.update('B2:B6', [[gspread_date], [gspread_date], [gspread_date], [calculate_reminder(60)], [calculate_reminder(7)]])
         # add_event_to_calendar(
         #     'Contact Music Department and see if any boosting is required'
         #     , 30)
@@ -467,21 +466,11 @@ async def main():
             "You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(1)
         # print("You also will have task reminders in your Calendar")
-        # await asyncio.sleep(3)
         await asyncio.sleep(3)
-        confirmation("Have you added it as an event to the website?", musician_tasks, 'C2:D2')
+        confirmation("Have you added this event to the website?", musician_tasks, 'C2:D2')
         await asyncio.sleep(3)
-        confirmation("Have you added it to the booking form?", musician_tasks, 'C3:D3')
+        confirmation("Have you added this event to the booking form?", musician_tasks, 'C3:D3')
         await asyncio.sleep(3)
-        print("Please ensure you also do the following asap:\n")
-        await asyncio.sleep(3)
-        print("* Create a zap to link form to the new Attendees worksheet.\n")
-        await asyncio.sleep(3)
-        print("* Ensure you initial and date when this is complete.\n")
-        await asyncio.sleep(3)
-        print("We hope this helps with your planning.\n")
-        await asyncio.sleep(3)
-        print("Please refresh the page to plan another event.\n")
     elif EVENT_TYPE == "Open Day":
         global task_worksheet
         task_worksheet = create_worksheet('Task Planner', tasks_data, 'E')
@@ -492,12 +481,14 @@ async def main():
         staff_badge_needed()
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
-        task_worksheet.update('B2:B14', datetime.now(), datetime.now(),
-                       datetime.now(), datetime.now(), calculate_reminder(60),
-                       calculate_reminder(60), calculate_reminder(60),
-                       calculate_reminder(30), calculate_reminder(30),
-                       calculate_reminder(30), calculate_reminder(7),
-                       calculate_reminder(1), calculate_reminder(0),)
+        today_date = datetime.now()
+        gspread_date = today_date.strftime("%d/%m/%Y")
+        task_worksheet.update('B2:B14', [[gspread_date], [gspread_date],
+                       [gspread_date], [gspread_date], [calculate_reminder(60)],
+                       [calculate_reminder(60)], [calculate_reminder(60)],
+                       [calculate_reminder(30)], [calculate_reminder(30)],
+                       [calculate_reminder(30)], [calculate_reminder(7)],
+                       [calculate_reminder(1)], [calculate_reminder(0)]],)
         # add_event_to_calendar('Please remember to check the stock \
         #     (enter into Stock worksheet), order staff badges and \
         #     update the social headers.', 60)
@@ -509,21 +500,24 @@ async def main():
         #     on social media and update social headers to next event', 1)
         # add_event_to_calendar('Please remove the option from the form', 0)
         print("You will now have been shared a planning spreadsheet.\n")
+        await asyncio.sleep(1)
+        confirmation("Have you added this event to the website?", task_worksheet, 'C2:D2')
         await asyncio.sleep(3)
-        print("You also will have reminders in your Calendar.\n")
+        confirmation("Have you added this event to the booking form?", task_worksheet, 'C3:D3')
         await asyncio.sleep(3)
-        print("Please ensure you do the following asap:\n")
+        confirmation("Have you added this event to Facebook?", task_worksheet, 'C5:D5')
         await asyncio.sleep(3)
-        print("* Add it as an event to the website and Facebook. \n")
-        await asyncio.sleep(3)
-        print("* Add it as an option to the booking form.\n")
-        await asyncio.sleep(3)
-        print("* Create a zap to link the form to the worksheet.\n")
-        await asyncio.sleep(3)
-        print("* Initial/date these tasks are complete on the Worksheet.\n")
-        await asyncio.sleep(3)
-        print("We hope this helps with your planning.\n")
-        await asyncio.sleep(3)
-        print("Please refresh the page to plan another event.\n")
+    print("Please ensure you also do the following asap:\n")
+    await asyncio.sleep(3)
+    print("* Create a zap to link form to the new Attendees worksheet.\n")
+    await asyncio.sleep(3)
+    print("* Ensure you initial and date when this is complete.\n")
+    await asyncio.sleep(3)
+    print("* Please check the spreadsheet for future due dates.\n")
+    await asyncio.sleep(3)
+    print("We hope this helps with your planning.\n")
+    await asyncio.sleep(3)
+    print("Please refresh the page to plan another event.\n")
+    await asyncio.sleep(3)
 
 asyncio.run(main())
