@@ -374,21 +374,23 @@ def calculate_reminder(x):
     gspread_reminder = reminder.strftime("%d/%m/%Y")
     return gspread_reminder
 
-def confirmation(spreadsheet_to_update, cell_range, task):
+def confirmation(message, spreadsheet_to_update, cell_range):
     """
     Enables user to confirm that the date provided is the correct date.
     If not, loops back to ask for the date again.
     """
     while True:
-        is_completed = input("Have you done this yet? (Y/N)? \n")
-        if check_y_n(task):
+        is_completed = input(f"{message} Y/N \n")
+        if check_y_n(is_completed):
             break
     if is_completed == "N":
-        print("Please ensure you do this as soon as possible:\n")
-        print("Once done, manually update the tracking spreadsheet")
+        print("Please ensure you do this as soon as possible.\n")
+        print("Once done, manually update the tracking spreadsheet.\n")
+        print("\n")
     elif is_completed == "Y":
-        spreadsheet_to_update.update(cell_range, datetime.now(), ENTERED_EMAIL)
-        print("The task on the spreadsheet has been updated as complete")
+        spreadsheet_to_update.update(f'{cell_range}', [[gspread_date, ENTERED_EMAIL]])
+        print("The task on the spreadsheet has been updated as complete. \n")
+        print("\n")
 
 
 # https://developers.google.com/calendar/api/v3/reference/events/insert
@@ -446,14 +448,11 @@ async def main():
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
         today_date = datetime.now()
+        global gspread_date
         gspread_date = today_date.strftime("%d/%m/%Y")
         sixty_reminder = calculate_reminder(60)
         seven_reminder = calculate_reminder(7)
         musician_tasks.update('B2:B6', [[gspread_date], [gspread_date], [gspread_date], [sixty_reminder], [seven_reminder]])
-        # musician_tasks.update('C2', sixty_reminder)    
-            # 'B2:B6', [today_date, today_date,
-            #            today_date, sixty_reminder,
-            #            seven_reminder])
         # add_event_to_calendar(
         #     'Contact Music Department and see if any boosting is required'
         #     , 30)
@@ -466,20 +465,17 @@ async def main():
         # https://docs.python.org/3/library/asyncio.html
         print(
             "You will now have been shared a planning spreadsheet.\n")
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
         # print("You also will have task reminders in your Calendar")
         # await asyncio.sleep(3)
-        print("Please ensure you do the following as soon as possible:\n")
         await asyncio.sleep(3)
-        # web_event = input("Have you added it as an event to the website? Y/N")
-        # confirmation(musician_tasks, 'C2:D2', web_event)
-        # booking_form = input("Have you added it to the booking form? Y/N")
-        # confirmation(musician_tasks, 'C3:D3', booking_form)
-        # print("* Add it as an event to the website. \n")
-        # await asyncio.sleep(3)
-        # print("* Add it as an option to the booking form.\n")
-        # await asyncio.sleep(3)
-        print("* Create a zap to link form to the Attendees worksheet.\n")
+        confirmation("Have you added it as an event to the website?", musician_tasks, 'C2:D2')
+        await asyncio.sleep(3)
+        confirmation("Have you added it to the booking form?", musician_tasks, 'C3:D3')
+        await asyncio.sleep(3)
+        print("Please ensure you also do the following asap:\n")
+        await asyncio.sleep(3)
+        print("* Create a zap to link form to the new Attendees worksheet.\n")
         await asyncio.sleep(3)
         print("* Ensure you initial and date when this is complete.\n")
         await asyncio.sleep(3)
