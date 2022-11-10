@@ -2,9 +2,9 @@
 
 ## Overview
 
-This site is designed specifically to help my colleagues and me to save time and be more efficient when implementing the marketing plan of certain events we offer through our work. Adding the type and date of the event will result in a Google spreadsheet for the event (containing a Tasks planner and other worksheets to update) as well as a series of calendar reminders that get entered in at a date relative to the date of the event itself. Historically we have sometimes forgetten to do the odd task but at the same time do not have the time to manually add in a long series of reminders either; this programme addresses these issues. Whilst the main content is overall designed to add efficiency to my work, for the purpose of this project a few modications were made to 1 maintain anonymity 2 make the project more complex (adding staff name badges and the option of choosing different types of events) and 3 not have calendar entries and spreadsheets added by external site users to our actual email accounts (for example, instead of adding attendees from my work, the user needs to enter their email address instead, and the calendar creation is done through a test email I created for this purpose).
+This site is designed specifically to help my colleagues and me to save time and be more efficient when implementing the marketing plan of certain events we offer through our work. Adding the type and date of the event will result in a Google spreadsheet for the event (containing a Tasks planner and other worksheets to update) containing due dates that get automatically generated and calculated relative to the date of the event itself. Historically we have sometimes forgetten to do the odd task but at the same time do not have the time to manually add in a long series of reminders either; this programme when combined with a Zapier zap (steps outlined below) addresses these issues. Whilst the main content is overall designed to add efficiency to my work, for the purpose of this project a few modications were made to 1 maintain anonymity 2 make the project more complex (e.g., adding staff name badges / requesting an email address) and 3 requesting an email also has the desired effect of ensuring we don't get test spreadsheets shared with our work emails automatically.
 
-Should someone else want to use it to plan their event, they could use the basic framework by <a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo" target="new" aria-label="How to fork a repo - opens in a new window">making a fork for the github repository</a> and then using that to make modifications to the types of events allowed, panda dataframes, and calendar descriptions/timeframes to create their own useful planning system.
+Should someone else want to use it to plan their event, they could use the basic framework by <a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo" target="new" aria-label="How to fork a repo - opens in a new window">making a fork for the github repository</a> and then using that to make modifications to the types of events allowed, panda dataframes and reminders. They then can use the guide below for creating the necessary zap to generate their own email reminders. By doing this, they can create their own useful planning system.
 
 ## Flowchart
 
@@ -34,9 +34,9 @@ Should someone else want to use it to plan their event, they could use the basic
 
 <strong>Name badges:</strong> The programme allows the user to add the information of any new staff who need badges into the system with the information populated formatted as all caps and added as a new row in the Badges worksheet (Open Day event only). It ensures that a response is given for each input.
 
-<strong>Calendar reminders:</strong> The programme automatically creates a series of reminders to help the user to remember what they have to do at a particular date in relation to the date of the event. The reminders cannot be in the past or fall on a weekend.
+<strong>Generated Due Dates:</strong> The programme automatically creates a series of due dates to help the user to remember what they have to do at a particular date in relation to the date of the event. The reminders cannot be in the past or fall on a weekend.
 
-<strong>Print reminders:</strong> The programme automatically creates a series of print statements to remind the user what they need to do now. They are done with a delay to make sure the user has a chance to read them.
+<strong>Prompts for tasks due:</strong> The programme automatically creates a series of prompts to ask if the user has done the task that is due currently. If they have, the completed date and entered username are entered into the relevent tasts spreadsheet. The programme also reminds the user to create zaps as they couldn't have done it until the programme generated the spreadsheet. The reminders are done with a delay to make sure the user has a chance to read them and doesn't miss anything.
 
 
 ## Testing
@@ -77,7 +77,7 @@ The live link can be found here <a href="https://open-day-planner.herokuapp.com/
 <li><a href="https://docs.python.org/3/library/datetime.html#datetime.datetime.weekday" aria-label="Python.org website (opens in a new window)" target="new">Python.org: getting weekday from date</a></li>
 </ul>
 
-### Email validation:
+### Email Entry validation:
 <ul><li><a href="https://www.tutorialspoint.com/python-program-to-validate-email-address" aria-label="Tutorials Point website (opens in a new window)" target="new">Tutorials Point Website: validating email address</a> <em>(this produces an error in pycodestyle)</em></li>
 
 <li><a href="https://www.includehelp.com/python/ignoring-escape-sequences-in-the-string.aspx#:~:text=To%20ignoring%20escape%20sequences%20in,%22r%22%20before%20the%20string." aria-label="Include Help website (opens in a new window)" target="new">Include Help website: how to ignore escape character in a string</a> <em>(this fixes error in pycodestyle from above)</em></li>
@@ -95,12 +95,6 @@ The live link can be found here <a href="https://open-day-planner.herokuapp.com/
 <li><a href="https://docs.gspread.org/en/latest/user-guide.html" aria-label="Gspread Userguide website (opens in a new window)" target="new">Gspread User Guide: general reference for using gspread</a></li>
 </ul>
 
-### Working with Google Calendar API
-<ul><li><a href="https://developers.google.com/calendar/api/v3/reference/events/insert" aria-label="Google Developers Website (opens in a new window)" target="new">Google Developers Website: inserting events</a></li>
-
-<li><a href="https://developers.google.com/workspace/guides/configure-oauth-consent" aria-label="Google Developers Website (opens in a new window)" target="new">Google Developers Website: Oauth Consent</a></li>
-</ul>
-
 ### Working with Asyncio
 <ul><li><a href="https://docs.python.org/3/library/asyncio.html" aria-label="Python.org Website (opens in a new window)" target="new">Python.org: asyncio</a></li></ul>
 
@@ -110,7 +104,6 @@ The live link can be found here <a href="https://open-day-planner.herokuapp.com/
 <li><strong>re: </strong>Enables the program to check whether a string was a valid email address</li>
 <li><strong>asyncio: </strong>Enables the programme to add a pause inbetween print statements</li>
 <li><strong>gspread: </strong>Enables the programme to link to Google Sheets</li>
-<li><strong>google.oauth2.service_account import Credentials: </strong> Enables the programme to link to Google Calendar</li>
 <li><strong>pandas as pd: </strong> Enables the creation of dataframes</li>
 <li><strong>from gspread_dataframe import set_with_dataframe: </strong>Enables user to add panda dataframes to the Google Sheet</li>
 <li><strong>from gspread_formatting import *: </strong>Enables users to specify formatting for their Google Sheets within Python</li></ul>

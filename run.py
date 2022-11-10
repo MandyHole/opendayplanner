@@ -3,7 +3,6 @@ from datetime import datetime, date, timedelta
 import re
 import asyncio
 import gspread
-from google.oauth2.service_account import Credentials
 import pandas as pd
 from gspread_dataframe import set_with_dataframe
 from gspread_formatting import *
@@ -11,9 +10,7 @@ from gspread_formatting import *
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
-    "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/calendar"
-    ]
+    "https://www.googleapis.com/auth/drive"]
 
 # From Love Sandwiches Project
 CREDS = Credentials.from_service_account_file('creds.json')
@@ -48,7 +45,7 @@ tasks_data = pd.DataFrame({
             'Add booking form option',
             'Create Zap: add attendees',
             'Create Zap: reminders',
-            'Add Facebook /Nub News Event',
+            'Add Facebook/Nub News Event',
             'Check promo stock',
             'Order billboards',
             'Order bus magnets',
@@ -463,42 +460,6 @@ def confirmation(message, spreadsheet_to_update, cell_range):
         print("\n")
 
 
-# https://developers.google.com/calendar/api/v3/reference/events/insert
-# def add_event_to_calendar(description, day):
-#     """
-#     Adds a reminder to the user's calendar using email provided.
-#     Includes customised description with tasks needed.
-#     Date of reminder is in relation to date of event.
-#     """
-#     event = {
-#         'summary': f'{EVENT_TYPE}: {DATE_OF_EVENT} Tasks to Complete',
-#         'description': f'It is about {day} days until the event. Open the \
-#             {EVENT_TYPE}: {DATE_OF_EVENT} spreadsheet. {description} \
-#                 Complete the Task Planner Spreadsheet.',
-#         'start': {
-#             'dateTime': calculate_reminder(day),
-#             'timeZone': 'Europe/London',
-#         },
-#         'end': {
-#             'dateTime': calculate_reminder(day) + timedelta(hours=1),
-#             'timeZone': 'Europe/London',
-#         },
-#         'attendees': [
-#             {'email': ENTERED_EMAIL},
-#         ],
-#         'reminders': {
-#             'useDefault': False,
-#             'overrides': [
-#                 {'method': 'email', 'minutes': 0},
-#                 {'method': 'popup', 'minutes': 10},
-#             ],
-#         },
-#         'transparency': 'transparent',
-#     }
-#     event = service.events().insert(
-#         calendarId='mandyhole17test', body=event).execute()
-
-
 async def main():
     """
     Runs all functions for the programe to work
@@ -550,27 +511,19 @@ async def main():
                                      [calculate_reminder(1)],
                                      [calculate_reminder(1)],
                                      [calculate_reminder(1)],
-                                     [calculate_reminder(-2)]])
-        # add_event_to_calendar(
-        #     'Contact Music Department and see if any boosting is required'
-        #     , 30)
-        # add_event_to_calendar('Remove option from form', 7)
-        # add_event_to_calendar(
-        #     'Post on social to saying looking forward to event', 1)
-        # add_event_to_calendar(
-        #     'Please take a photo of the event today and post on \
-        #     social media', 0)
+                                     [calculate_reminder(-5)]])
         # https://docs.python.org/3/library/asyncio.html
         print(
             "You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(1)
-        # print("You also will have task reminders in your Calendar")
-        await asyncio.sleep(3)
         confirmation("Have you added this event to the website?",
                      prep_tasks, 'C2:D2')
         await asyncio.sleep(3)
         confirmation("Have you added this event to the booking form?",
                      prep_tasks, 'C3:D3')
+        await asyncio.sleep(3)
+        confirmation("Have you added this event to Facebook?",
+                     prep_tasks, 'C5:D5')
         await asyncio.sleep(3)
     elif EVENT_TYPE == "Open Day":
         global task_worksheet
@@ -609,27 +562,17 @@ async def main():
                                          [calculate_reminder(1)],
                                          [calculate_reminder(1)],
                                          [calculate_reminder(1)],
-                                         [calculate_reminder(-2)]],)
-        # add_event_to_calendar('Please remember to check the stock \
-        #     (enter into Stock worksheet), order staff badges and \
-        #     update the social headers.', 60)
-        # add_event_to_calendar('Please remember to add post to social media, \
-        #     boost if required and prepare artwork for next Open Day',
-        #     30)
-        # add_event_to_calendar('Please post reminder on social media', 7)
-        # add_event_to_calendar('Please remember to post photo of gift bags \
-        #     on social media and update social headers to next event', 1)
-        # add_event_to_calendar('Please remove the option from the form', 0)
+                                         [calculate_reminder(-5)]],)
         print("You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(1)
-        confirmation("Have you added this event to the website?",
+        confirmation("Has an image been selected?",
                      task_worksheet, 'C2:D2')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to the booking form?",
+        confirmation("Have you added this event to the website?",
                      task_worksheet, 'C3:D3')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to Facebook?",
-                     task_worksheet, 'C5:D5')
+        confirmation("Have you added this event to the booking form?",
+                     task_worksheet, 'C4:D4')
         await asyncio.sleep(3)
     print("Please ensure you also do the following asap:\n")
     await asyncio.sleep(3)
