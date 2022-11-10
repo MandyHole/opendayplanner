@@ -282,7 +282,7 @@ def get_email():
         if validate_email(ENTERED_EMAIL):
             break
     print("Thank you for providing a valid email address.")
-    print("We can share the Google spreadsheet and reminders with you.\n")
+    print("We can share the Google spreadsheet with you.\n")
     print("Please be patient as the spreadsheet is created...\n")
     return ENTERED_EMAIL
 
@@ -516,14 +516,14 @@ async def main():
         print(
             "You will now have been shared a planning spreadsheet.\n")
         await asyncio.sleep(1)
-        confirmation("Have you added this event to the website?",
+        confirmation("Have you selected an image?",
                      prep_tasks, 'C2:D2')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to the booking form?",
+        confirmation("Have you added this event to the website?",
                      prep_tasks, 'C3:D3')
         await asyncio.sleep(3)
-        confirmation("Have you added this event to Facebook?",
-                     prep_tasks, 'C5:D5')
+        confirmation("Have you added this event to the booking form?",
+                     prep_tasks, 'C4:D4')
         await asyncio.sleep(3)
     elif EVENT_TYPE == "Open Day":
         global task_worksheet
