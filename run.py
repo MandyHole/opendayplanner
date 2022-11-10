@@ -30,38 +30,59 @@ stock_data = pd.DataFrame({
     })
 
 attendees_data = pd.DataFrame({
-    "Name of Child": [''],
-    "Child's Year Group": [''],
-    "Child's Interests": [''],
+    "Surname": [''],
+    "Child 1's Year Group": [''],
+    "Child 1's Interests": [''],
+    "Child 2's Year Group": [''],
+    "Child 2's Interests": [''],
+    "Child 3's Year Group": [''],
+    "Child 3's Interests": [''],
     "Dietary Requirements": [''],
+    "How Heard About Us": ['']
 })
 
 tasks_data = pd.DataFrame({
     "Task": [
-            'Added to Website',
-            'Option on Booking Form',
-            'Created Zap',
-            'Added Facebook Event',
-            'Checked Stock',
-            'Ordered New Badges',
-            'Update Social Headers/Add Popup Box',
-            'Add Social Post / Boost',
-            'Complete New Artwork',
-            'Add Social Media Post(2)',
-            'Add Social Media Post(3)',
-            'Remove Option From Form',
-            'Remove Social Header'
+            Select imagery',
+            Add event to website',
+            Add booking form option',
+            Create Zap: add attendees',
+            Create Zap: reminders',
+            Add Facebook /Nub News Event',
+            Check promo stock',
+            Order billboards',
+            Order bus magnets',
+            Create invitations/posters/flyers',
+            Print invitations,etc',
+            Email Prep Schools',
+            Submit caretaker request',
+            Distribute invitations, etc',
+            Order new badges',
+            Update social headers: Facebook/Insta',
+            Add website popup',
+            Add social post / boost',
+            Confirm attendance',
+            Add social post(2)',
+            Pack goody bags',
+            Print name badges',
+            Add social post(3)',
+            Remove option from form',
+            Remove social header'
+            Wrap up event
             ],
     "Due Date": ['', '', '', '', '', '', '', '',
-                 '', '', '', '', ''],
+                 '', '', '', '', '', '', '', '', ''],
     "Date Completed": ['', '', '', '', '', '',
-                       '', '', '', '', '', '', ''],
+                       '', '', '', '', '', '', '',
+                       '', '', '', ''],
     "Contact Email": ['', '', '', '', '', '',
-                      '', '', '', '', '', '', ''],
-    "Notes": ['', '', '', '', '', '', '', '', '', '', '', '', '']
+                      '', '', '', '', '', '', '',
+                      '', '', '', ''],
+    "Notes": ['', '', '', '', '', '', '', '', '',
+              '', '', '', '', '', '', '', '']
 })
 
-musician_tasks_data = pd.DataFrame({
+prep_tasks_data = pd.DataFrame({
     "Task": [
             'Added to Website',
             'Option on Booking Form',
@@ -88,7 +109,7 @@ print("I hope it helps to make the event run seamlessly!\n")
 
 def get_event_type():
     """
-    Requests the type of event from user (Open Day or Musician).
+    Requests the type of event from user (Open Day or Prep).
     Loops until the user inputs a correct value.
     """
     while True:
@@ -101,13 +122,13 @@ def get_event_type():
 
 def validate_event_type(values):
     """
-    Checks user input 'Open Day' or 'Musician'
+    Checks user input 'Open Day' or 'Prep'
     Produces a value error if not and triggers loop to ask again.
     """
     try:
-        if values != "Open Day" and values != "Musician":
+        if values != "Open Day" and values != "Prep":
             raise ValueError(
-                "Input 'Open Day' or 'Musician' using initial caps."
+                "Input 'Open Day' or 'Prep' using initial caps."
             )
     except ValueError as e:
         print(f"'{values}' is not a valid response. {e}\n")
@@ -437,25 +458,25 @@ async def main():
     Runs all functions for the programe to work
     """
     print("Please specify the type of event that you are planning.")
-    print("* This could be 'Open Day' or 'Musician'.")
+    print("* This could be 'Open Day' or 'Prep'.")
     print("* Please ensure you use initial caps.\n")
     get_event_type()
     confirm_date()
     get_email()
     create_spreadsheet()
-    if EVENT_TYPE == "Musician":
-        global musician_tasks
-        musician_tasks = create_worksheet('Task Planner',
-                                          musician_tasks_data,
+    if EVENT_TYPE == "Prep":
+        global prep_tasks
+        prep_tasks = create_worksheet('Task Planner',
+                                          prep_tasks_data,
                                           'E')
-        create_worksheet('Attendees', attendees_data, 'D')
+        create_worksheet('Attendees', attendees_data, 'I')
         create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
         SPREADSHEET.del_worksheet(sheet_one)
         today_date = datetime.now()
         global gspread_date
         gspread_date = today_date.strftime("%d/%m/%Y")
-        musician_tasks.update('B2:B6', [[gspread_date],
+        prep_tasks.update('B2:B6', [[gspread_date],
                                         [gspread_date],
                                         [gspread_date],
                                         [calculate_reminder(60)],
@@ -476,15 +497,15 @@ async def main():
         # print("You also will have task reminders in your Calendar")
         await asyncio.sleep(3)
         confirmation("Have you added this event to the website?",
-                     musician_tasks, 'C2:D2')
+                     prep_tasks, 'C2:D2')
         await asyncio.sleep(3)
         confirmation("Have you added this event to the booking form?",
-                     musician_tasks, 'C3:D3')
+                     prep_tasks, 'C3:D3')
         await asyncio.sleep(3)
     elif EVENT_TYPE == "Open Day":
         global task_worksheet
         task_worksheet = create_worksheet('Task Planner', tasks_data, 'E')
-        create_worksheet('Attendees', attendees_data, 'D')
+        create_worksheet('Attendees', attendees_data, 'I')
         create_worksheet('Stock Take', stock_data, 'D')
         global BADGES_WORKSHEET
         BADGES_WORKSHEET = create_worksheet('Badges', badges_data, 'D')
@@ -493,17 +514,32 @@ async def main():
         SPREADSHEET.del_worksheet(sheet_one)
         today_date = datetime.now()
         gspread_date = today_date.strftime("%d/%m/%Y")
-        task_worksheet.update('B2:B14', [[gspread_date], [gspread_date],
-                                         [gspread_date], [gspread_date],
+        task_worksheet.update('B2:B27', [[gspread_date],
+                                         [gspread_date],
+                                         [gspread_date],
+                                         [gspread_date],
+                                         [gspread_date],
+                                         [calculate_reminder(120)],
+                                         [calculate_reminder(90)],
+                                         [calculate_reminder(90)],
+                                         [calculate_reminder(90)],
+                                         [calculate_reminder(80)],
+                                         [calculate_reminder(75)],
+                                         [calculate_reminder(75)],
+                                         [calculate_reminder(60)],
                                          [calculate_reminder(60)],
                                          [calculate_reminder(60)],
                                          [calculate_reminder(60)],
                                          [calculate_reminder(30)],
                                          [calculate_reminder(30)],
-                                         [calculate_reminder(30)],
+                                         [calculate_reminder(10)],
                                          [calculate_reminder(7)],
+                                         [calculate_reminder(4)],
+                                         [calculate_reminder(3)],
                                          [calculate_reminder(1)],
-                                         [calculate_reminder(0)]],)
+                                         [calculate_reminder(1)],
+                                         [calculate_reminder(1)],
+                                         [calculate_reminder(-2)]],)
         # add_event_to_calendar('Please remember to check the stock \
         #     (enter into Stock worksheet), order staff badges and \
         #     update the social headers.', 60)

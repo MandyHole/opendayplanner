@@ -13,7 +13,7 @@ Should someone else want to use it to plan their event, they could use the basic
 
 ## Features
 
-<strong>Type of event verification:</strong> The programme checks the user input either "Musician" or "Open Day"
+<strong>Type of event verification:</strong> The programme checks the user input either "Prep" or "Open Day"
 
 <img src="assets/readme-images/event-validation.png" alt="examples of type of event validation" width="50%">
 
