@@ -43,57 +43,103 @@ attendees_data = pd.DataFrame({
 
 tasks_data = pd.DataFrame({
     "Task": [
-            Select imagery',
-            Add event to website',
-            Add booking form option',
-            Create Zap: add attendees',
-            Create Zap: reminders',
-            Add Facebook /Nub News Event',
-            Check promo stock',
-            Order billboards',
-            Order bus magnets',
-            Create invitations/posters/flyers',
-            Print invitations,etc',
-            Email Prep Schools',
-            Submit caretaker request',
-            Distribute invitations, etc',
-            Order new badges',
-            Update social headers: Facebook/Insta',
-            Add website popup',
-            Add social post / boost',
-            Confirm attendance',
-            Add social post(2)',
-            Pack goody bags',
-            Print name badges',
-            Add social post(3)',
-            Remove option from form',
-            Remove social header'
-            Wrap up event
+            'Select imagery',
+            'Add event to website',
+            'Add booking form option',
+            'Create Zap: add attendees',
+            'Create Zap: reminders',
+            'Add Facebook /Nub News Event',
+            'Check promo stock',
+            'Order billboards',
+            'Order bus magnets',
+            'Create invitations/posters/flyers',
+            'Print invitations,etc',
+            'Email Prep Schools',
+            'Submit caretaker request',
+            'Distribute invitations, etc',
+            'Order staff badges',
+            'Update social headers: Facebook/Insta',
+            'Add website popup',
+            'Add social post / boost',
+            'Confirm attendance',
+            'Add social post(2)',
+            'Pack goody bags',
+            'Print name badges',
+            'Add social post(3)',
+            'Remove option from form',
+            'Remove social header',
+            'Wrap up event'
             ],
     "Due Date": ['', '', '', '', '', '', '', '',
+                 '', '', '', '', '', '', '', '', '',
                  '', '', '', '', '', '', '', '', ''],
     "Date Completed": ['', '', '', '', '', '',
                        '', '', '', '', '', '', '',
-                       '', '', '', ''],
+                       '', '', '', '', '', '', '',
+                       '', '', '', '', '', ''],
     "Contact Email": ['', '', '', '', '', '',
                       '', '', '', '', '', '', '',
-                      '', '', '', ''],
+                      '', '', '', '',
+                      '', '', '', '', '', '', '', '', ''],
     "Notes": ['', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '']
+              '', '', '', '', '', '', '', '',
+              '', '', '', '', '', '', '', '', '']
 })
 
 prep_tasks_data = pd.DataFrame({
-    "Task": [
-            'Added to Website',
-            'Option on Booking Form',
-            'Created Zap',
-            'Checked Stock',
-            'Remove Option From Form',
-            ],
-    "Due Date": ['', '', '', '', ''],
-    "Date Completed": ['', '', '', '', ''],
-    "Person Performing Task": ['', '', '', '', ''],
-    "Notes": ['', '', '', '', '']
+    "Task": ['Select imagery',
+             'Add event to website',
+             'Add booking form option',
+             'Create Zap: add attendees',
+             'Create Zap: reminders',
+             'Add Facebook /Nub News Event',
+             'Book required rooms & photographer',
+             'Notify catering',
+             'Check promo stock',
+             'Order billboards',
+             'Order bus magnets',
+             'Create invitations/posters/flyers',
+             'Print invitations,etc',
+             'Email Prep Schools',
+             'Submit caretaker request',
+             'Distribute invitations, etc',
+             'Order staff badges',
+             'Update social headers: Facebook/Insta',
+             'Add website popup',
+             'Add social post / boost',
+             'Confirm attendance',
+             'Confirm numbers to catering',
+             'Add social post(2)',
+             'Pack goody bags',
+             'Print name badges',
+             'Add social post(3)',
+             'Remove option from form',
+             'Remove social header',
+             'Wrap up event'],
+    "Due Date": ['', '', '', '', '',
+                 '', '', '', '', '',
+                 '', '', '', '', '',
+                 '', '', '', '', '',
+                 '', '', '', '', '',
+                 '', '', '', ''],
+    "Date Completed": ['', '', '', '', '',
+                       '', '', '', '', '',
+                       '', '', '', '', '',
+                       '', '', '', '', '',
+                       '', '', '', '', '',
+                       '', '', '', ''],
+    "Person Performing Task": ['', '', '', '', '',
+                               '', '', '', '', '',
+                               '', '', '', '', '',
+                               '', '', '', '', '',
+                               '', '', '', '', '',
+                               '', '', '', ''],
+    "Notes": ['', '', '', '', '',
+              '', '', '', '', '',
+              '', '', '', '', '',
+              '', '', '', '', '',
+              '', '', '', '', '',
+              '', '', '', '']
 })
 
 badges_data = pd.DataFrame({
@@ -467,8 +513,8 @@ async def main():
     if EVENT_TYPE == "Prep":
         global prep_tasks
         prep_tasks = create_worksheet('Task Planner',
-                                          prep_tasks_data,
-                                          'E')
+                                      prep_tasks_data,
+                                      'E')
         create_worksheet('Attendees', attendees_data, 'I')
         create_worksheet('Stock Take', stock_data, 'D')
         sheet_one = SPREADSHEET.get_worksheet(0)
@@ -477,10 +523,10 @@ async def main():
         global gspread_date
         gspread_date = today_date.strftime("%d/%m/%Y")
         prep_tasks.update('B2:B6', [[gspread_date],
-                                        [gspread_date],
-                                        [gspread_date],
-                                        [calculate_reminder(60)],
-                                        [calculate_reminder(7)]])
+                                    [gspread_date],
+                                    [gspread_date],
+                                    [calculate_reminder(60)],
+                                    [calculate_reminder(7)]])
         # add_event_to_calendar(
         #     'Contact Music Department and see if any boosting is required'
         #     , 30)
