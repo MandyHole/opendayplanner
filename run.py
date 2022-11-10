@@ -5,12 +5,15 @@ import asyncio
 import gspread
 import pandas as pd
 from gspread_dataframe import set_with_dataframe
+from google.oauth2.service_account import Credentials
 from gspread_formatting import *
 
+# From Love Sandwiches Project
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
-    "https://www.googleapis.com/auth/drive"]
+    "https://www.googleapis.com/auth/drive"
+    ]
 
 # From Love Sandwiches Project
 CREDS = Credentials.from_service_account_file('creds.json')
@@ -23,7 +26,7 @@ stock_data = pd.DataFrame({
                       'Pencils', 'Notebooks', 'Water Bottles'],
     'Number Remaining': ['', '', '', '', '', ''],
     'Location of Stock': ['', '', '', '', '', ''],
-    'Date checked': ['', '', '', '', '', '']
+    'Date Checked': ['', '', '', '', '', '']
     })
 
 attendees_data = pd.DataFrame({
@@ -274,7 +277,7 @@ def get_email():
     Prints statements to say what email will be used for.
     """
     print("\n")
-    print("Your email address enables access to a spreadsheet and reminders")
+    print("Your email address enables access to a planning spreadsheet")
     while True:
         global ENTERED_EMAIL
         ENTERED_EMAIL = input("What is your email address?\n")
