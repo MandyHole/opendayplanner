@@ -522,11 +522,35 @@ async def main():
         today_date = datetime.now()
         global gspread_date
         gspread_date = today_date.strftime("%d/%m/%Y")
-        prep_tasks.update('B2:B6', [[gspread_date],
-                                    [gspread_date],
-                                    [gspread_date],
-                                    [calculate_reminder(60)],
-                                    [calculate_reminder(7)]])
+        prep_tasks.update('B2:B30', [[gspread_date],
+                                     [gspread_date],
+                                     [gspread_date],
+                                     [gspread_date],
+                                     [gspread_date],
+                                     [calculate_reminder(120)],
+                                     [calculate_reminder(120)],
+                                     [calculate_reminder(120)],
+                                     [calculate_reminder(90)],
+                                     [calculate_reminder(90)],
+                                     [calculate_reminder(90)],
+                                     [calculate_reminder(80)],
+                                     [calculate_reminder(75)],
+                                     [calculate_reminder(75)],
+                                     [calculate_reminder(60)],
+                                     [calculate_reminder(60)],
+                                     [calculate_reminder(60)],
+                                     [calculate_reminder(60)],
+                                     [calculate_reminder(30)],
+                                     [calculate_reminder(30)],
+                                     [calculate_reminder(10)],
+                                     [calculate_reminder(7)],
+                                     [calculate_reminder(7)],
+                                     [calculate_reminder(4)],
+                                     [calculate_reminder(3)],
+                                     [calculate_reminder(1)],
+                                     [calculate_reminder(1)],
+                                     [calculate_reminder(1)],
+                                     [calculate_reminder(-2)]])
         # add_event_to_calendar(
         #     'Contact Music Department and see if any boosting is required'
         #     , 30)
@@ -611,7 +635,9 @@ async def main():
     await asyncio.sleep(3)
     print("* Create a zap to link form to the new Attendees worksheet.\n")
     await asyncio.sleep(3)
-    print("* Ensure you initial and date when this is complete.\n")
+    print("* Create a zap to receive reminders.\n")
+    await asyncio.sleep(3)
+    print("* Ensure you initial and date when these are complete.\n")
     await asyncio.sleep(3)
     print("* Please check the spreadsheet for future due dates.\n")
     await asyncio.sleep(3)
